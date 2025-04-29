@@ -174,29 +174,46 @@
     background-color: #0C0918;
     border: 1px solid #625b8c;
     border-radius: 15px;
-    padding: 35px 18px;
+    padding: 50px 19px;
     width: 200px;
     text-align: center;
     flex-shrink: 0;
 }
 
-.match-avatar {
-    width: 100px;
-    border-radius: 50%;
+.match-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-left: 10px;
     margin-bottom: 10px;
+    text-align: left;
+}
+
+.match-info h3 {
+    font-size: 16px;
+    color: #fff;
+    margin: 0;
+}
+
+.match-avatar {
+    width: 25%;
+    border-radius: 50%;
     border: 2px solid #5c4ed2;
+    object-fit: cover;
 }
 
 .match-text {
     font-size: 12px;
     color: #cccbe5;
-    margin: 10px 0 20px;
+    margin: 30px 0 20px;
 }
 
 .message-btn {
+    margin-top: 20px;
     padding: 10px 14px;
-    background-color: #5c4ed2;
-    border: none;
+    background-color: #0C0918;
+    border: 1px solid #7663f3;
     border-radius: 20px;
     color: white;
     cursor: pointer;
