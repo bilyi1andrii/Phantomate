@@ -123,15 +123,19 @@ export default function MatchPage() {
 
                     <div className="match-cards">
                         {[
-                            { name: 'Elara', age: 23, img: Match1, msg: "I don’t do small talk — I speak in ravensong and midnight songs." },
+                            { name: 'Elara', age: 23, img: Match1, msg: "I don’t do small talk — I speak in metaphors and midnight songs.I draw what I dream and sometimes what I fear.If you ever wandered through the woods just to hear the silence, you’ve probably passed me once or twice. I’m not here for fast flames — I’m here for slow-burning magic"},
                             { name: 'Kael', age: 27, img: Match2, msg: "I come alive when the city sleeps. My bookshelf’s a mess — I get lost often, just like them." },
                             { name: 'Mira', age: 25, img: Match3, msg: "I believe some people are meant to find each other across realities." },
                             { name: 'Orion', age: 30, img: Match4, msg: "I live between midnight and dawn. My journal is a ritual of shadowed thoughts." },
                             { name: 'Brobro', age: 11, img: Match4, msg: "I live between midnight and dawn. My journal is a ritual of shadowed thoughts." }
                         ].map((match, index) => (
                             <div className="match-card" key={index}>
-                                <img src={match.img} alt={match.name} className="match-avatar" />
-                                <h3>{match.name}, {match.age}</h3>
+                                <div className="match-header">
+                                    <img src={match.img} alt={match.name} className="match-avatar" />
+                                    <div className="match-info">
+                                        <h3>{match.name}, {match.age}</h3>
+                                    </div>
+                                </div>
                                 <p className="match-text">{match.msg}</p>
                                 <button className="message-btn">Message</button>
                             </div>
