@@ -1,0 +1,101 @@
+.personality-page {
+    display: flex;
+    color: white;
+    height: 100vh;
+}
+
+.personality-content {
+    flex: 1;
+    padding: 40px 60px;
+    overflow-y: auto;
+}
+
+.intro-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 60px;
+}
+
+.intro-text h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.intro-text p {
+    max-width: 500px;
+    color: #cccbe5;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.take-test-btn {
+    padding: 12px 30px;
+    background-color: #1a132c;
+    border: 1px solid #7663f3;
+    border-radius: 25px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.take-test-btn:hover {
+    background-color: #7663f3;
+}
+
+.boo-image {
+    width: 200px;
+    height: auto;
+    border-radius: 20px;
+}
+
+.questionnaire {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.question-block {
+    background-color: #0C0918;
+    border: 1px solid #625b8c;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.question-text {
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    gap: 15px;
+}
+
+.option-circle {
+    position: relative;
+    display: inline-block;
+}
+
+.option-circle input[type="radio"] {
+    display: none;
+}
+
+.checkmark {
+    height: 24px;
+    width: 24px;
+    border: 1.5px solid #cccbe5;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    transition: background 0.3s ease;
+}
+
+.option-circle input[type="radio"]:checked + .checkmark {
+    background-color: #7663f3;
+    border-color: #7663f3;
+}
