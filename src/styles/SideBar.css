@@ -131,22 +131,22 @@
 
 
 .profile-dropdown {
-        position: absolute;
-        top: 75px;
-        right: 0;
-        margin-right: 5px;
-        background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 180px;
-        padding: 10px 0;
-        z-index: 9999;
-        animation: fadeIn 0.2s ease-out;
-        color: white;
+    position: absolute;
+    top: 75px;
+    right: 0;
+    margin-right: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 210px;
+    padding: 10px 0;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease-out;
+    color: white;
 }
 
 .profile-dropdown .dropdown-item {
-        color: white;
+        color: rgb(26, 17, 35);
 }
 
 
@@ -162,7 +162,7 @@
 }
 
 .dropdown-item:hover {
-    background-color: rgba(255, 255, 255, 0.4)
+    background-color: rgba(255, 255, 255, 0.7)
 }
 
 @keyframes fadeIn {

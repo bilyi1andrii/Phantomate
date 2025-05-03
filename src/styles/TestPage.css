@@ -67,7 +67,7 @@
     background-color: #0C0918;
     border: 1px solid #625b8c;
     border-radius: 15px;
-    padding: 20px;
+    padding: 30px;
 }
 
 .question-text {
@@ -96,10 +96,45 @@
     height: 24px;
     width: 24px;
     border: 1.5px solid #cccbe5;
-    border-radius: 50%;
+    border-radius: 30%;
     display: inline-block;
     position: relative;
     transition: background 0.3s ease;
+    transform-origin: center;
+}
+
+.option-circle input[type="radio"]:checked + .checkmark {
+    background-color: #7663f3;
+    animation: pulseScale 0.3s ease;
+}
+
+@keyframes pulseScale {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.7);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.option-circle:nth-child(2) .checkmark {
+    transform: scale(1.4);
+}
+.option-circle:nth-child(3) .checkmark {
+    transform: scale(1.1);
+}
+.option-circle:nth-child(4) .checkmark {
+    transform: scale(0.9);
+}
+
+.option-circle:nth-child(5) .checkmark {
+    transform: scale(1.1);
+}
+.option-circle:nth-child(6) .checkmark {
+    transform: scale(1.4);
 }
 
 .option-circle input[type="radio"]:checked + .checkmark {
