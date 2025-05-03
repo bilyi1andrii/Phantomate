@@ -28,7 +28,7 @@
 }
 
 .ghost-image {
-    width: 100px;
+    width: 100%;
     height: auto;
     align-self: center;
     padding-top: 30px;
@@ -153,5 +153,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 1001;
+    background-color: rgba(0, 0, 0, 0.6);
+    animation: fadeInBackdrop 0.3s ease-in-out;
+}
+
+@keyframes fadeInBackdrop {
+    0% {
+        backdrop-filter: blur(0px);
+    }
+    100% {
+        backdrop-filter: blur(5px);
+    }
 }

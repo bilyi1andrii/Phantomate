@@ -3,9 +3,11 @@ import '../styles/ProfilePage.css';
 import SideBar from '../components/SideBar.jsx';
 import GhostAvatar from '../assets/profile-icon.png';
 import EmptyGhost from '../assets/cuteghost.svg';
+import SignUpForm from '../components/SignUpForm';
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('profile-posts');
+    const [showPopup, setShowPopup] = useState(false);
 
     return (
         <div className="profile-page">
@@ -22,7 +24,7 @@ export default function ProfilePage() {
                                 <span><strong>12</strong> likes received</span>
                             </div>
                         </div>
-                        <button className="edit-button">Edit profile</button>
+                        <button className="edit-button" onClick={() => setShowPopup(true)}>Edit profile</button>
                     </div>
 
                     <div className="tabs">
@@ -59,6 +61,11 @@ export default function ProfilePage() {
                     )}
                 </div>
             </main>
+            {showPopup && (
+                <div className="popup-overlay">
+                    <SignUpForm onClose={() => setShowPopup(false)} />
+                </div>
+            )}
         </div>
     );
 }

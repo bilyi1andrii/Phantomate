@@ -1,7 +1,7 @@
 import '../styles/HomePage.css';
 import SignUpForm from '../components/SignUpForm';
 import SideBar from '../components/SideBar.jsx';
-import GhostImage from '../assets/cuteghost.svg';
+import GhostImage from '../assets/cuteghost.gif';
 import PostIcon1 from '../assets/post-icon1.png';
 import PostIcon2 from '../assets/post-icon2.png';
 import PostIm1 from '../assets/post1.png';

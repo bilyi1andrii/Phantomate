@@ -35,7 +35,7 @@ export default function SignUpForm({ onClose }) {
 
                     <div className="input-container">
                         <input
-                            type="number"
+                            type="text"
                             value={age}
                             onChange={(e) => setAge(e.target.value)}
                             placeholder="Your Age"
