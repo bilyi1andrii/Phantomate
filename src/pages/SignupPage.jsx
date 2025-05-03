@@ -29,7 +29,7 @@ export default function SignupPage() {
         setError('');
         try {
             await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/signin');
+            navigate('/home', { state: { showSignupForm: true } });
         } catch (e) {
             console.error(e);
             if (e.code === 'auth/email-already-in-use') {
@@ -75,8 +75,8 @@ export default function SignupPage() {
                     </div>
 
                     {error && (
-                        <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>
-                    )} // TODO error styling
+                        <div className="error-message">{error}</div>
+                    )}
 
                     <p className="signup-prompt">
                         <Link to="/signin" className="signup-link">Already a phantom? Sign In</Link>

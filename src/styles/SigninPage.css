@@ -52,7 +52,7 @@
     width: 55%;
     flex-direction: column;
     padding: 20px;
-    gap: 1px;
+    gap: 10px;
 }
 
 .signin_header {
@@ -73,6 +73,7 @@
     transition: all 0.3s ease;
     margin-top: 15px;
     width: 50%;
+    margin: 0 auto;
 }
 
 @media (max-width: 1000px) {
@@ -120,6 +121,7 @@
 .signup-prompt {
     align-self: center;
     margin-top: -5px;
+    margin: 0 auto;
 }
 
 .signup-link {
@@ -169,4 +171,17 @@
     
     .footer_signin .social-media a:active {
     color: #ffffff;
+    }
+
+    .error-message {
+        color: #ff4da3;
+        border: 1px solid #ffa39e;
+        padding: 5px;
+        width: 60%;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-size: 14px;
+        text-align: center;
+        margin: 15px auto 0 auto;
+        margin: 0 auto;
     }

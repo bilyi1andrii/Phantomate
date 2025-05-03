@@ -70,8 +70,8 @@ export default function SigninPage() {
                     </div>
 
                     {error && (
-                        <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>
-                    )} // TODO error styling
+                        <div className="error-message">{error}</div>
+                    )}
 
                     <p className="signup-prompt">
                         <Link to="/signup" className="signup-link">Not on Phantomate yet? Sign up</Link>

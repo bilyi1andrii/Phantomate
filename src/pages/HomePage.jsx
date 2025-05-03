@@ -1,12 +1,25 @@
 import '../styles/HomePage.css';
+import SignUpForm from '../components/SignUpForm';
 import SideBar from '../components/SideBar.jsx';
 import GhostImage from '../assets/cuteghost.svg';
 import PostIcon1 from '../assets/post-icon1.png';
 import PostIcon2 from '../assets/post-icon2.png';
 import PostIm1 from '../assets/post1.png';
 import PostIm2 from '../assets/post2.png';
+import { useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+
 
 export default function PhantomatePage() {
+    const location = useLocation();
+    const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        if (location.state?.showSignupForm) {
+            setShowModal(true);
+        }
+    }, [location.state]);
+
     return (
         <div className="phantomate-page">
             <SideBar />
@@ -48,6 +61,11 @@ export default function PhantomatePage() {
                         <img src={PostIm2} alt="Nyxveil" className="post-image" />
                     </div>
                 </div>
+                {showModal && (
+                    <div className="popup-overlay">
+                        <SignUpForm onClose={() => setShowModal(false)} />
+                    </div>
+                )}
             </main>
         </div>
     );
