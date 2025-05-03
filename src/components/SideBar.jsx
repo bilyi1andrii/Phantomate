@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import LogoIcon from '../assets/logo-icon.png';
 import HomeIcon from '../assets/home-icon.png';
@@ -6,9 +7,32 @@ import ChatIcon from '../assets/chat-icon.png';
 import TestIcon from '../assets/test-icon.png';
 import ProfIcon from '../assets/profile-icon.png';
 import '../styles/Sidebar.css';
-
+import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 
 export default function Sidebar({ hideProfileButton = false }) {
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const handleSignOutClick = (event) => {
+        event.preventDefault();
+        setDropdownOpen(false);
+        setShowConfirmPopup(true);
+    };
+
     return (
         <>
             <aside className="sidebar">
@@ -47,11 +71,24 @@ export default function Sidebar({ hideProfileButton = false }) {
             </aside>
 
             {!hideProfileButton && (
-                <div className="profile-button-container">
-                    <a href="/profile">
-                        <img src={ProfIcon} alt="Profile" className="profile-image" />
-                    </a>
+                <div className="profile-button-container" ref={dropdownRef}>
+                    <img
+                        src={ProfIcon}
+                        alt="Profile"
+                        className="profile-image"
+                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                    />
+                    {dropdownOpen && (
+                        <div className="profile-dropdown">
+                            <NavLink to="/profile" className="dropdown-item">Profile</NavLink>
+                            <a href="#" className="dropdown-item" onClick={handleSignOutClick}>Sign Out</a>
+                        </div>
+                    )}
                 </div>
+            )}
+
+            {showConfirmPopup && (
+                <ConfirmSignOutPopup onCancel={() => setShowConfirmPopup(false)} />
             )}
         </>
     );

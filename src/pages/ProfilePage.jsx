@@ -4,10 +4,12 @@ import SideBar from '../components/SideBar.jsx';
 import GhostAvatar from '../assets/profile-icon.png';
 import EmptyGhost from '../assets/cuteghost.svg';
 import SignUpForm from '../components/SignUpForm';
+import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('profile-posts');
     const [showPopup, setShowPopup] = useState(false);
+    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
     return (
         <div className="profile-page">
@@ -23,8 +25,12 @@ export default function ProfilePage() {
                                 <span><strong>6</strong> friends</span>
                                 <span><strong>12</strong> likes received</span>
                             </div>
+                            <div className="header-buttons">
+                                <button className="edit-button" onClick={() => setShowPopup(true)}>Edit profile</button>
+                                <button className="signout-button" onClick={() => setShowConfirmPopup(true)}>Sign out</button>
+                               
+                            </div>
                         </div>
-                        <button className="edit-button" onClick={() => setShowPopup(true)}>Edit profile</button>
                     </div>
 
                     <div className="tabs">
@@ -65,6 +71,9 @@ export default function ProfilePage() {
                 <div className="popup-overlay">
                     <SignUpForm onClose={() => setShowPopup(false)} />
                 </div>
+            )}
+            {showConfirmPopup && (
+                <ConfirmSignOutPopup onCancel={() => setShowConfirmPopup(false)} />
             )}
         </div>
     );

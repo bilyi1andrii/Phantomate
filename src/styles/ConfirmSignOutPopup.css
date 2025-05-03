@@ -1,0 +1,115 @@
+.confirm-signout-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(4px);
+}
+
+.confirm-signout-card {
+    width: 40vh;
+    height: 40vh;
+    max-width: 600px;
+    max-height: 600px;
+    background-image: 
+        linear-gradient(rgba(48, 26, 189, 0.1), rgba(0, 0, 0, 0.1)),
+        url('../assets/loadghost.gif');
+    background-position: center;
+    background-size: cover;
+    background-color: #182730;
+    opacity: 0.95;
+    border: 1px solid white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeInContent 0.4s ease-out;
+    background-blend-mode: overlay;
+}
+
+.confirm-signout-card h2 {
+    color: white;
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+    word-wrap: break-word;
+    width: 60%;
+}
+
+.confirm-signout-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.confirm-button,
+.cancel-button {
+    padding: 15px 100px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-width: 120px;
+    border: 1px solid #ffffff;
+}
+
+.confirm-button {
+    background: linear-gradient(90deg, #6E5DAC 0%, #5640A3 100%);
+    color: white;
+}
+
+.confirm-button:hover {
+    background: linear-gradient(90deg, #8e15ff 0%, #7f00c9 100%);
+}
+
+.cancel-button {
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #333;
+}
+
+.cancel-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 768px) {
+    .confirm-signout-card {
+        width: 90%;
+        height: 50vh;
+        padding: 25px 15px;
+    }
+
+    .confirm-signout-card h2 {
+        font-size: 20px;
+    }
+
+    .confirm-button,
+    .cancel-button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+
+@keyframes fadeInContent {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

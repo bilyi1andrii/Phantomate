@@ -7,20 +7,20 @@
     margin-top: 20px;
     margin-left: 20px;
     border-right: 0.5px solid #625b8c;
-}
+    }
 
 .logo {
     display: flex;
     align-items: center;
     margin-bottom: 40px;
-}
+    }
 
 .logo-icon {
     width:20%;
     border-radius: 10px;
     border: 1px solid #625b8c;
     pointer-events: none;
-}
+    }
 
 .logo-text {
     padding-left: 10px;
@@ -28,16 +28,16 @@
     font-weight: bold;
     width: 80%;
 
-}
+    }
 
 @media (max-width: 1008px) {
-    .logo-text {
+.logo-text {
         font-size: 20px;
     }
 }
 
 @media (max-width: 700px) {
-    .logo-text {
+.logo-text {
         font-size: 15px;
     }
 }
@@ -74,7 +74,7 @@
     transition: color 0.3s ease;
 }
 
-.nav-link:hover, .nav-link.active {
+    .nav-link:hover, .nav-link.active {
     color: #6e68e1;
 }
 
@@ -88,10 +88,7 @@
     right: 20px;
     z-index: 1000;
     transition: transform 0.3s ease-in-out;
-}
-
-.profile-button-container:hover {
-    transform: scale(1.05);
+    cursor: pointer;
 }
 
 .footer-side-home {
@@ -106,29 +103,73 @@
     z-index: 1;
     flex-wrap: wrap;
     margin-left: -20px;
-    }
-    
-    .footer-side-home .social-media {
+}
+
+.footer-side-home .social-media {
     display: flex;
     gap: 10px;
-    }
-    
-    .footer-side-home .about-us {
+}
+
+.footer-side-home .about-us {
     margin: 0;
-    }
-    
-    .footer-side-home .social-media a {
+}
+
+.footer-side-home .social-media a {
     color: #aaa8cc;
     text-decoration: none;
     transition: color 0.3s ease;
     font-size: 13px;
-    }
-    
-    .footer-side-home .social-media a:hover {
+}
+
+.footer-side-home .social-media a:hover {
     color: #ffffff;
-    }
-    
-    .footer-side-home .social-media a:active {
+}
+
+.footer-side-home .social-media a:active {
     color: #ffffff;
+}
+
+
+.profile-dropdown {
+        position: absolute;
+        top: 75px;
+        right: 0;
+        margin-right: 5px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 180px;
+        padding: 10px 0;
+        z-index: 9999;
+        animation: fadeIn 0.2s ease-out;
+        color: white;
+}
+
+.profile-dropdown .dropdown-item {
+        color: white;
+}
+
+
+.dropdown-item {
+    display: block;
+    padding: 25px 10px;
+    text-align: center;
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.4)
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
-    
+    to {
+        opacity: 1;
+    }
+}
