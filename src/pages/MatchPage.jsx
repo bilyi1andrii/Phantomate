@@ -1,33 +1,73 @@
 import React, { useState, useRef } from 'react';
 import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
-
+import { useNavigate } from 'react-router-dom';
 import '../styles/MatchPage.css';
 import SideBar from '../components/SideBar.jsx';
 import LikeIcon from '../assets/like.png';
 import NopeIcon from '../assets/nope.png';
 import ShuffleIcon from '../assets/shuffle.svg';
 import ProfileImage from '../assets/phantom-profile.png';
-import Match1 from '../assets/match1.png';
-import Match2 from '../assets/match2.png';
-import Match3 from '../assets/match3.png';
-import Match4 from '../assets/match4.png';
+import Match1 from '../assets/match1.gif';
+import Match2 from '../assets/match2.jpg';
+
+const mockProfiles = [
+    {
+        id: 'phantom123',
+        name: 'Shik shak shok',
+        img: ProfileImage,
+        bio: '📍 Mistwood Hollow\nI like misty walks through abandoned hills...',
+    },
+    {
+        id: 'elara456',
+        name: 'Elara',
+        img: Match1,
+        bio: '📍 Moonlit Fields\nI speak in metaphors and midnight songs.',
+    },
+    {
+        id: 'kael789',
+        name: 'Kael',
+        img: Match2,
+        bio: '📍 Twilight Alley\nI get lost in books and shadows.',
+    },
+];
 
 export default function MatchPage() {
     const [bioVisible, setBioVisible] = useState(false);
+    const [swipes, setSwipes] = useState([]);
+    const [profileIndex, setProfileIndex] = useState(0);
+    const [direction, setDirection] = useState(1);
+    const [isEmptyProfiles, setIsEmptyProfiles] = useState(false);  // Додано для перевірки наявності профілів
+
+    const currentProfile = mockProfiles[profileIndex] || null;
+    const navigate = useNavigate();
+
+    const likeRef = useRef(null);
+    const nopeRef = useRef(null);
+    const cardRef = useRef(null);
+
+    const x = useMotionValue(0);
+    const rotate = useTransform(x, [-150, 150], [-10, 10]);
+    const controls = useAnimation();
 
     const handleNameClick = () => {
         setBioVisible(!bioVisible);
     };
 
     const handleRefreshClick = () => {
-        console.log("Shuffle clicked!");
+        const randomDirection = Math.random() > 0.5 ? 1 : -1;
+        const nextItem = (profileIndex + randomDirection + mockProfiles.length) % mockProfiles.length;
+        setProfileIndex(nextItem);
+        setDirection(randomDirection);
+        setIsEmptyProfiles(false);  // Скидаємо стан, коли профілі є
     };
 
-    const likeRef = useRef(null);
-    const nopeRef = useRef(null);
-    const x = useMotionValue(0);
-    const rotate = useTransform(x, [-150, 150], [-10, 10]);
-    const controls = useAnimation();
+    const saveSwipe = async (phantomId, direction) => {
+        setSwipes((prev) => [
+            ...prev,
+            { phantomId, direction, timestamp: Date.now() },
+        ]);
+        console.log(`(Mock) Swipe saved: ${direction} on ${phantomId}`);
+    };
 
     const handleDragStart = () => {
         controls.stop();
@@ -39,83 +79,108 @@ export default function MatchPage() {
         const offsetX = info.offset.x;
         const velocityX = info.velocity.x;
 
-        if (offsetX !== 0) {
+        if (Math.abs(offsetX) > 100 && currentProfile) {
             const isLike = offsetX > 0;
-            const ref = isLike ? likeRef : nopeRef;
+            const direction = isLike ? 'like' : 'nope';
             const dir = isLike ? 1 : -1;
+            const iconRef = isLike ? likeRef : nopeRef;
 
-            if (!ref.current) {
-                console.error('Icon ref is not attached to the DOM!');
-                return;
-            }
-
-            const iconRect = ref.current.getBoundingClientRect();
-
-            if (!event.target?.getBoundingClientRect) {
-                console.error('Drag target is not a valid element');
-                return;
-            }
-
+            const iconRect = iconRef.current.getBoundingClientRect();
             const imgRect = event.target.getBoundingClientRect();
-            const targetX =
+
+            const deltaX =
                 iconRect.left + iconRect.width / 2 -
                 (imgRect.left + imgRect.width / 2);
 
-            await controls.start({
-                x: targetX,
-                transition: { type: 'spring', stiffness: 150, damping: 20, bounce: 0, velocity: velocityX }
-            });
+            const deltaY =
+                iconRect.top + iconRect.height / 2 -
+                (imgRect.top + imgRect.height / 2);
+
+            await saveSwipe(currentProfile.id, direction);
 
             await controls.start({
-                x: targetX + dir,
+                x: x.get() + deltaX,
+                y: deltaY,
                 scale: 0.1,
                 opacity: 0,
-                rotate: 20 * dir,
-                transition: { duration: 0.4 }
+                transition: { duration: 0.4, ease: 'easeInOut' },
             });
+
+            controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
+            setBioVisible(false);
+            setProfileIndex((prev) => prev + 1);
+
+            // Перевірка на наявність профілів після свайпу
+            if (profileIndex + 1 >= mockProfiles.length) {
+                setIsEmptyProfiles(true);
+            }
         } else {
             await controls.start({
                 x: 0,
                 rotate: 0,
                 scale: 1,
                 opacity: 1,
-                transition: { type: 'spring', stiffness: 300, damping: 30, bounce: 0, velocity: velocityX }
+                transition: { type: 'spring', stiffness: 300, damping: 30 },
             });
         }
     };
+
+    const handleMessageClick = (profile) => {
+        navigate("/home", {
+            state: { activeBro: profile }
+        });
+    };
+
     return (
         <div className="match-page">
             <SideBar />
             <main className="match-main">
                 <div className="swipe-section">
-                    <div className="swipe-card">
-                        <div className="swipe-header">
-                            <img ref={nopeRef} src={NopeIcon} alt="Nope" className="swipe-btn" />
-                            <motion.img
-                                src={ProfileImage}
-                                alt="Phantom profile"
-                                className="profile-image-match"
-                                drag="x"
-                                dragElastic={0}
-                                onDragStart={handleDragStart}
-                                onDragEnd={handleDragEnd}
-                                animate={controls}
-                                style={{ x, rotate, cursor: 'grab' }}
-                                whileTap={{ scale: 0.95 }}
-                                whileDrag={{ scale: 1.1, opacity: 0.8 }}
-                            />
-                            <img ref={likeRef} src={LikeIcon} alt="Like" className="swipe-btn" />
-                        </div>
-
-                        <h3 className="phantom-name" onClick={handleNameClick}>
-                            Shik shak shok
-                        </h3>
-
-                        {bioVisible && (
-                            <div className="phantom-bio">
-                                <span className="bio-location">📍 Mistwood Hollow</span><br />
-                                I like misty walks through abandoned hills, whispering secrets to the wind, and occasionally under the moonlight. Bonus points if you don’t ghost me first.
+                    <div className={`swipe-card ${isEmptyProfiles ? 'empty' : ''}`} ref={cardRef}>
+                        {isEmptyProfiles ? (
+                            <div className="no-profiles-message">
+                                <p>Sorry, no more profiles to choose from. Please refresh!</p>
                             </div>
+                        ) : (
+                            <>
+                                <div className="swipe-header">
+                                    <img ref={nopeRef} src={NopeIcon} alt="Nope" className="swipe-btn" />
+                                    {currentProfile && (
+                                        <motion.img
+                                            key={currentProfile.id}
+                                            src={currentProfile.img}
+                                            alt={currentProfile.name}
+                                            className="profile-image-match"
+                                            drag="x"
+                                            dragElastic={0.2}
+                                            dragConstraints={cardRef}
+                                            onDragStart={handleDragStart}
+                                            onDragEnd={handleDragEnd}
+                                            animate={controls}
+                                            style={{ x, rotate, cursor: 'grab' }}
+                                            whileTap={{ scale: 0.95 }}
+                                            whileDrag={{ scale: 1.1, opacity: 0.8 }}
+                                        />
+                                    )}
+                                    <img ref={likeRef} src={LikeIcon} alt="Like" className="swipe-btn" />
+                                </div>
+
+                                {currentProfile && (
+                                    <>
+                                        <h3 className="phantom-name" onClick={handleNameClick}>
+                                            {currentProfile.name}
+                                        </h3>
+
+                                        {bioVisible && (
+                                            <div className="phantom-bio">
+                                                {currentProfile.bio.split('\n').map((line, i) => (
+                                                    <span key={i}>{line}<br /></span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </>
                         )}
 
                         <div className="swipe-refresh-wrapper">
@@ -132,24 +197,25 @@ export default function MatchPage() {
                     <p className="match-subtitle">Your matched souls await.</p>
 
                     <div className="match-cards">
-                        {[
-                            { name: 'Elara', age: 23, img: Match1, msg: "I don’t do small talk — I speak in metaphors and midnight songs.I draw what I dream and sometimes what I fear.If you ever wandered through the woods just to hear the silence, you’ve probably passed me once or twice. I’m not here for fast flames — I’m here for slow-burning magic" },
-                            { name: 'Kael', age: 27, img: Match2, msg: "I come alive when the city sleeps. My bookshelf’s a mess — I get lost often, just like them." },
-                            { name: 'Mira', age: 25, img: Match3, msg: "I believe some people are meant to find each other across realities." },
-                            { name: 'Orion', age: 30, img: Match4, msg: "I live between midnight and dawn. My journal is a ritual of shadowed thoughts." },
-                            { name: 'Brobro', age: 11, img: Match4, msg: "I live between midnight and dawn. My journal is a ritual of shadowed thoughts." }
-                        ].map((match, index) => (
-                            <div className="match-card" key={index}>
-                                <div className="match-header">
-                                    <img src={match.img} alt={match.name} className="match-avatar" />
-                                    <div className="match-info">
-                                        <h3>{match.name}, {match.age}</h3>
+                        {swipes
+                            .filter((s) => s.direction === 'like')
+                            .map((swipe, index) => {
+                                const match = mockProfiles.find(p => p.id === swipe.phantomId);
+                                return match ? (
+                                    <div className="match-card" key={index}>
+                                        <div className="match-header">
+                                            <img src={match.img} alt={match.name} className="match-avatar" />
+                                            <div className="match-info">
+                                                <h3>{match.name}</h3>
+                                            </div>
+                                        </div>
+                                        <p className="match-text">{match.bio}</p>
+                                        <button className="message-btn" onClick={() => handleMessageClick(match)}>
+                                            Message
+                                        </button>
                                     </div>
-                                </div>
-                                <p className="match-text">{match.msg}</p>
-                                <button className="message-btn">Message</button>
-                            </div>
-                        ))}
+                                ) : null;
+                            })}
                     </div>
                 </div>
             </main>

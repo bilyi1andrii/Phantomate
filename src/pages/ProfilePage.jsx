@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
 import '../styles/ProfilePage.css';
 import SideBar from '../components/SideBar.jsx';
 import GhostAvatar from '../assets/profile-icon.png';
@@ -72,7 +71,7 @@ export default function ProfilePage() {
                 <div className="popup-overlay">
                     <SignUpForm onClose={() => setShowPopup(false)} />
                 </div>
-            )};
+            )}
             {showConfirmPopup && (
                 <ConfirmSignOutPopup onCancel={() => setShowConfirmPopup(false)} />
             )}

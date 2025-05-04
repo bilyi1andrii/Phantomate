@@ -36,6 +36,13 @@ export default function PhantomatePage() {
         }
     }, [location.pathname]);
 
+    useEffect(() => {
+        if (location.state?.activeBro) {
+            setActiveBro(location.state.activeBro);
+            setIsChatMode(true);
+        }
+    }, [location.state]);
+
     return (
         <div className="phantomate-page">
             <SideBar toggleChatMode={toggleChatMode} isChatMode={isChatMode} />

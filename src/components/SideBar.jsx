@@ -78,7 +78,7 @@ export default function Sidebar({ hideProfileButton = false, toggleChatMode, isC
                     <NavLink
                         to="/home"
                         onClick={handleChatClick}
-                        className={() =>
+                        className={({ isActive }) => 
                             `nav-link ${location.pathname === '/home' && isChatMode ? "nav-link-active" : ""}`
                         }
                     >
@@ -94,6 +94,14 @@ export default function Sidebar({ hideProfileButton = false, toggleChatMode, isC
                         Personality tests
                     </NavLink>
                 </nav>
+                <footer className="footer-side-home">
+                    <p className="about-us">© 2025 | About us</p>
+                    <div className="social-media">
+                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    </div>
+                </footer>
             </aside>
 
             {!hideProfileButton && (

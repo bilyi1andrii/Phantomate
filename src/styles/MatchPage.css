@@ -31,14 +31,13 @@
     border-radius: 20px;
     padding: 40px 60px;
     text-align: center;
-    max-width: 900px;
-    max-height: 600px;
-    height: 100%;
+    height: 600px;
     width: 100%;
+    max-width: 900px;
     position: relative;
     overflow: hidden;
-    
 }
+
 
 .swipe-header {
     display: flex;
@@ -50,7 +49,7 @@
 }
 
 .swipe-btn {
-    width: 15%;
+    width: 10%;
     height: auto;
     cursor: pointer;
     opacity: 0.7;
@@ -65,9 +64,10 @@
 .profile-image-match {
     border: 2px solid #9d8bff;
     padding: 5%;
-    width: 25%;
-    height: auto;
+    width: 15vw;
+    height: 15vw;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .phantom-name {
@@ -85,10 +85,12 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     outline: none;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .phantom-name:hover {
     background-color: #9d8bff;
+    transform: scale(1.05);
 }
 
 .phantom-bio {
@@ -101,7 +103,8 @@
     padding-top: 10px;
     width: 50%;
     margin: 0 auto;
-    margin-top: 10px;
+    margin-top: 40px;
+    transform: translateY(-20px);
 }
 
 .bio-location {
@@ -129,7 +132,7 @@
 }
 
 .swipe-refresh:hover {
-    transform: scale(1.02);
+    transform: scale(1.1);
 }
 
 .swipe-refresh img {
@@ -148,7 +151,6 @@
   
 
 .matched-section {
-    margin-top: 130px;
     padding-top: 70px;
     text-align: center;
     margin-left: 6%;
@@ -180,7 +182,7 @@
     background-color: #0C0918;
     border: 1px solid #625b8c;
     border-radius: 15px;
-    padding: 50px 19px;
+    padding: 30px 30px;
     width: 200px;
     text-align: center;
     flex-shrink: 0;
@@ -203,7 +205,8 @@
 }
 
 .match-avatar {
-    width: 25%;
+    width: 3vw;
+    height: 3vw;
     border-radius: 50%;
     border: 2px solid #5c4ed2;
     object-fit: cover;
@@ -217,15 +220,32 @@
 
 .message-btn {
     margin-top: 20px;
-    padding: 10px 14px;
+    padding: 15px 20px;
     background-color: #0C0918;
     border: 1px solid #7663f3;
     border-radius: 20px;
     color: white;
     cursor: pointer;
     transition: background 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .message-btn:hover {
-    background-color: #7663f3;
+    background-color: #9d8bff;
+    transform: scale(1.05);
+}
+
+.swipe-card.empty {
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.no-profiles-message {
+    color: #555;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
 }

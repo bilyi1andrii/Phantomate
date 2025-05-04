@@ -7,7 +7,7 @@
 .profile-main {
     padding: 60px;
     width: 70%;
-    margin-top: 30px;
+    margin-top: 10px;
     overflow-y: auto;
     animation: fadeIn 0.5s ease-in-out;
 }
@@ -38,12 +38,14 @@
 }
 .header-buttons {
     display: flex;
-    gap: 30px;
-    margin-left: auto;
-    position: absolute;
-    right: 60px;
-    top: 70px;
+    gap: 3vw;
+    position: fixed;
+    top: 60px;
+    right: 4vw;
     align-items: center;
+    max-width: calc(100% - 4vw);
+    transition: top 0.3s ease;
+    z-index: 10;
 }
 
 .edit-button, .signout-button {
@@ -217,7 +219,7 @@
     animation: fadeIn 0.3s ease-in-out;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
     .profile-main {
         padding: 30px 20px;
         width: 100%;
@@ -239,7 +241,7 @@
     }
     .header-buttons {
         right: 20px;
-        top: 20px;
+        top: 30px;
         flex-direction: column;
         gap: 20px;
     }
