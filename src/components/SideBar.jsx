@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import LogoIcon from '../assets/logo-icon.png';
 import HomeIcon from '../assets/home-icon.png';
 import MatchIcon from '../assets/match-icon.png';
@@ -9,10 +9,19 @@ import ProfIcon from '../assets/profile-icon.png';
 import '../styles/Sidebar.css';
 import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 
-export default function Sidebar({ hideProfileButton = false }) {
+export default function Sidebar({ hideProfileButton = false, toggleChatMode, isChatMode }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const dropdownRef = useRef(null);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [shouldActivateChat, setShouldActivateChat] = useState(false);
+    useEffect(() => {
+        if (location.pathname === '/home' && shouldActivateChat) {
+            toggleChatMode?.();
+            setShouldActivateChat(false);
+        }
+    }, [location.pathname, shouldActivateChat, toggleChatMode]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -33,6 +42,14 @@ export default function Sidebar({ hideProfileButton = false }) {
         setShowConfirmPopup(true);
     };
 
+    const handleChatClick = (e) => {
+        e.preventDefault();
+        if (location.pathname !== '/home') {
+            navigate('/home');
+        }
+        toggleChatMode?.();
+    };
+
     return (
         <>
             <aside className="sidebar">
@@ -42,32 +59,41 @@ export default function Sidebar({ hideProfileButton = false }) {
                 </div>
 
                 <nav className="nav-links">
-                    <NavLink to="/home" className={({ isActive }) => isActive ? "nav-link nav-link-active" : "nav-link"}>
+                    <NavLink
+                        to="/home"
+                        className={({ isActive }) => isActive ? "nav-link nav-link-active" : "nav-link"}
+                    >
                         <img src={HomeIcon} alt="Home Icon" className="nav-icon" />
                         Home
                     </NavLink>
-                    <NavLink to="/match" className={({ isActive }) => isActive ? "nav-link nav-link-active" : "nav-link"}>
+
+                    <NavLink
+                        to="/match"
+                        className={({ isActive }) => isActive ? "nav-link nav-link-active" : "nav-link"}
+                    >
                         <img src={MatchIcon} alt="Match Icon" className="nav-icon" />
                         Match
                     </NavLink>
-                    <NavLink to="/chat" className={({ isActive }) => isActive ? "nav-link nav-link-active" : "nav-link"}>
+
+                    <NavLink
+                        to="/home"
+                        onClick={handleChatClick}
+                        className={() =>
+                            `nav-link ${location.pathname === '/home' && isChatMode ? "nav-link-active" : ""}`
+                        }
+                    >
                         <img src={ChatIcon} alt="Chat Icon" className="nav-icon" />
                         Chat
                     </NavLink>
-                    <NavLink to="/personality" className={({ isActive }) => isActive ? "nav-link nav-link-active" : "nav-link"}>
+
+                    <NavLink
+                        to="/personality"
+                        className={({ isActive }) => isActive ? "nav-link nav-link-active" : "nav-link"}
+                    >
                         <img src={TestIcon} alt="Test Icon" className="nav-icon" />
                         Personality tests
                     </NavLink>
                 </nav>
-
-                <footer className="footer-side-home">
-                    <p className="about-us">© 2025 | About us</p>
-                    <div className="social-media">
-                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a>
-                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-                    </div>
-                </footer>
             </aside>
 
             {!hideProfileButton && (

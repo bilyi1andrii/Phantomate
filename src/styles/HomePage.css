@@ -2,8 +2,8 @@
     display: flex;
     height: 100vh;
     color: white;
+    transition: all 0.3s ease;
 }
-
 
 .main-content {
     display: flex;
@@ -14,6 +14,7 @@
     justify-content: center;
     gap: 3%;
     animation: fadeIn 0.5s ease-in-out;
+    margin-left: 30px;
 }
 
 @keyframes fadeIn {
@@ -31,6 +32,7 @@
     height: calc(100vh - 130px);
     background-color: #0C0918;
     position: relative;
+    transition: width 0.5s ease-in-out;
 }
 
 .ghost-image {
@@ -69,7 +71,6 @@
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
 
 .bro-button:hover {
     background-color: #1a172a;
@@ -145,8 +146,18 @@
     .bro-list {
         display: none;
     }
+
     .posts {
-        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .bro-list.expanded {
+        width: 100%;
+        display: flex;
+    }
+
+    .posts.compressed {
+        display: none;
     }
 }
 
@@ -171,4 +182,21 @@
     100% {
         backdrop-filter: blur(5px);
     }
+}
+
+.bro-list {
+    transition: width 0.5s ease-in-out;
+}
+
+.bro-list.expanded {
+    width: 60%;
+}
+
+.posts.compressed {
+    width: 10%;
+}
+
+.posts {
+    transition: flex 0.5s ease-in-out, width 0.5s ease-in-out;
+    flex: 1;
 }
