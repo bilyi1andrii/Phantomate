@@ -21,7 +21,7 @@
 .swipe-section {
     display: flex;
     justify-content: center;
-    margin-bottom: 80px;
+    margin-bottom: 30px;
 }
 
 .swipe-card {
@@ -29,27 +29,27 @@
     background-color: #0C0918;
     border: 1px solid #625b8c;
     border-radius: 20px;
-    padding: 40px 60px;
+    padding: 0px 60px;
     text-align: center;
     height: 600px;
     width: 100%;
     max-width: 900px;
     position: relative;
     overflow: hidden;
+    padding-top: 100px;
 }
 
 .swipe-header {
+    position: relative;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
-    margin-top: 60px;
-    margin-bottom: 20px;
-    gap: 3%;
+    gap: 2rem;
 }
 
 .swipe-btn {
-    width: 10%;
-    height: auto;
+    width: 80px;
+    height: 80px;
     cursor: pointer;
     opacity: 0.7;
     border-radius: 100px;
@@ -67,6 +67,7 @@
     height: 15vw;
     border-radius: 50%;
     object-fit: cover;
+    z-index: 999;
 }
 
 .phantom-name {
@@ -131,7 +132,8 @@
 }
 
 .swipe-refresh:hover {
-    transform: scale(1.1);
+    transform: scale(1.03);
+    
 }
 
 .swipe-refresh img {
@@ -247,4 +249,29 @@
     font-size: 18px;
     font-weight: bold;
     text-align: center;
+}
+
+.arrow-icon {
+    width: 80px;
+    height: auto;
+}
+
+
+
+.swipe-btn-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.swipe-label {
+    font-size: 0.8rem;
+    color: #ccc;
+    margin-top: 4px;
+    text-align: center;
+}
+
+.arrow-icon {
+    width: 50px;
+    height: auto;
 }

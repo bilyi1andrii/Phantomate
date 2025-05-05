@@ -9,6 +9,8 @@ import ShuffleIcon from '../assets/shuffle.svg';
 import ProfileImage from '../assets/phantom-profile.png';
 import Match1 from '../assets/match1.gif';
 import Match2 from '../assets/match2.jpg';
+import ArrowLike from '../assets/matchlike.gif';
+import ArrowNope from '../assets/matchnope.gif';
 
 const mockProfiles = [
     {
@@ -143,7 +145,12 @@ export default function MatchPage() {
                         ) : (
                             <>
                                 <div className="swipe-header">
-                                    <img ref={nopeRef} src={NopeIcon} alt="Nope" className="swipe-btn" />
+                                    <div className="swipe-btn-wrapper">
+                                        <img ref={nopeRef} src={NopeIcon} alt="Nope" className="swipe-btn" />
+                                        <span className="swipe-label">Nope</span>
+                                    </div>
+                                    <img src={ArrowNope} alt="Arrow Nope" className="arrow-icon left-arrow" />
+
                                     {currentProfile && (
                                         <motion.img
                                             key={currentProfile.id}
@@ -161,7 +168,11 @@ export default function MatchPage() {
                                             whileDrag={{ scale: 1.1, opacity: 0.8 }}
                                         />
                                     )}
-                                    <img ref={likeRef} src={LikeIcon} alt="Like" className="swipe-btn" />
+                                    <img src={ArrowLike} alt="Arrow Like" className="arrow-icon right-arrow" />
+                                    <div className="swipe-btn-wrapper">
+                                        <img ref={likeRef} src={LikeIcon} alt="Like" className="swipe-btn" />
+                                        <span className="swipe-label">Like</span>
+                                    </div>
                                 </div>
 
                                 {currentProfile && (
@@ -184,7 +195,7 @@ export default function MatchPage() {
 
                         <div className="swipe-refresh-wrapper">
                             <span className="swipe-refresh-text">Two spirits, one swipe!</span>
-                            <button className="swipe-refresh" onClick={handleRefreshClick}>
+                            <button className="swipe-refresh" mg src={ShuffleIcon} alt="shuffle" onClick={handleRefreshClick}>
                                 <img src={ShuffleIcon} alt="shuffle" />
                             </button>
                         </div>
