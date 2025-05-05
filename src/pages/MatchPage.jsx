@@ -36,7 +36,7 @@ export default function MatchPage() {
     const [swipes, setSwipes] = useState([]);
     const [profileIndex, setProfileIndex] = useState(0);
     const [direction, setDirection] = useState(1);
-    const [isEmptyProfiles, setIsEmptyProfiles] = useState(false);  // Додано для перевірки наявності профілів
+    const [isEmptyProfiles, setIsEmptyProfiles] = useState(false);
 
     const currentProfile = mockProfiles[profileIndex] || null;
     const navigate = useNavigate();
@@ -58,7 +58,7 @@ export default function MatchPage() {
         const nextItem = (profileIndex + randomDirection + mockProfiles.length) % mockProfiles.length;
         setProfileIndex(nextItem);
         setDirection(randomDirection);
-        setIsEmptyProfiles(false);  // Скидаємо стан, коли профілі є
+        setIsEmptyProfiles(false);
     };
 
     const saveSwipe = async (phantomId, direction) => {
@@ -110,7 +110,6 @@ export default function MatchPage() {
             setBioVisible(false);
             setProfileIndex((prev) => prev + 1);
 
-            // Перевірка на наявність профілів після свайпу
             if (profileIndex + 1 >= mockProfiles.length) {
                 setIsEmptyProfiles(true);
             }

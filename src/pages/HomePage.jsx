@@ -1,6 +1,7 @@
 import '../styles/HomePage.css';
 import SignUpForm from '../components/SignUpForm';
 import SideBar from '../components/SideBar.jsx';
+import PostCreator from '../components/PostCreator';
 import GhostImage from '../assets/cuteghost.gif';
 import PostIcon1 from '../assets/post-icon1.png';
 import PostIcon2 from '../assets/post-icon2.png';
@@ -21,7 +22,7 @@ export default function PhantomatePage() {
 
     const handleBroClick = (broIndex) => {
         setActiveBro(broIndex);
-        toggleChatMode();
+        setIsChatMode(true);
     };
 
     useEffect(() => {
@@ -48,22 +49,42 @@ export default function PhantomatePage() {
             <SideBar toggleChatMode={toggleChatMode} isChatMode={isChatMode} />
             <main className="main-content">
                 <div className={`bro-list ${isChatMode ? 'expanded' : ''}`}>
-                    <div className="bro-list-content">
-                        {[...Array(6)].map((_, index) => (
+                    <div className="bro-list-content" onClick={toggleChatMode}>
+                        {activeBro !== null && (
                             <button
-                                key={index}
-                                className={`bro-button ${activeBro === index ? 'active' : ''}`}
-                                onClick={() => handleBroClick(index)}
+                                className="bro-button active"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleBroClick(activeBro);
+                                }}
                             >
-                                Bro {index + 1}
+                                Bro {activeBro + 1}
                             </button>
-                        ))}
-                        <div className="ghost-deco"></div>
-                        <img src={GhostImage} alt="Ghost Decoration" className="ghost-image" />
+                        )}
+
+                        {[...Array(6)].map((_, index) => {
+                            if (index === activeBro) return null;
+                            return (
+                                <button
+                                    key={index}
+                                    className="bro-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleBroClick(index);
+                                    }}
+                                >
+                                    Bro {index + 1}
+                                </button>
+                            );
+                        })}
+                        <button className="ghost-button">
+                            <img src={GhostImage} alt="Ghost Decoration" className="ghost-image" />
+                        </button>
                     </div>
                 </div>
 
                 <div className={`posts ${isChatMode ? 'compressed' : ''}`}>
+                    <PostCreator />
                     <div className="post">
                         <div className="post-header">
                             <img src={PostIcon1} alt="Ghost Avatar" className="post-avatar" />

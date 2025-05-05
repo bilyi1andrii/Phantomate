@@ -36,9 +36,10 @@
 .avatar:hover {
     transform: scale(1.05);
 }
+
 .header-buttons {
     display: flex;
-    gap: 3vw;
+    gap: 2vw;
     position: fixed;
     top: 60px;
     right: 4vw;

@@ -200,3 +200,11 @@
     transition: flex 0.5s ease-in-out, width 0.5s ease-in-out;
     flex: 1;
 }
+
+.ghost-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+}
