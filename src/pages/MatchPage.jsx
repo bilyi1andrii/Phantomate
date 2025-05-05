@@ -1,46 +1,23 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
+import { onSnapshot, collection, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { auth, db } from '../config/firebase';
 import '../styles/MatchPage.css';
 import SideBar from '../components/SideBar.jsx';
 import LikeIcon from '../assets/like.png';
 import NopeIcon from '../assets/nope.png';
 import ShuffleIcon from '../assets/shuffle.svg';
 import ProfileImage from '../assets/phantom-profile.png';
-import Match1 from '../assets/match1.gif';
-import Match2 from '../assets/match2.jpg';
 import ArrowLike from '../assets/matchlike.gif';
 import ArrowNope from '../assets/matchnope.gif';
 
-const mockProfiles = [
-    {
-        id: 'phantom123',
-        name: 'Shik shak shok',
-        img: ProfileImage,
-        bio: '📍 Mistwood Hollow\nI like misty walks through abandoned hills...',
-    },
-    {
-        id: 'elara456',
-        name: 'Elara',
-        img: Match1,
-        bio: '📍 Moonlit Fields\nI speak in metaphors and midnight songs.',
-    },
-    {
-        id: 'kael789',
-        name: 'Kael',
-        img: Match2,
-        bio: '📍 Twilight Alley\nI get lost in books and shadows.',
-    },
-];
 
 export default function MatchPage() {
     const [bioVisible, setBioVisible] = useState(false);
-    const [swipes, setSwipes] = useState([]);
     const [profileIndex, setProfileIndex] = useState(0);
     const [direction, setDirection] = useState(1);
-    const [isEmptyProfiles, setIsEmptyProfiles] = useState(false);
 
-    const currentProfile = mockProfiles[profileIndex] || null;
     const navigate = useNavigate();
 
     const likeRef = useRef(null);
@@ -51,24 +28,87 @@ export default function MatchPage() {
     const rotate = useTransform(x, [-150, 150], [-10, 10]);
     const controls = useAnimation();
 
+
+    const [profiles, setProfiles] = useState([])
+    const [swipedIds, setSwipedIds] = useState(new Set());
+    const [matchedIds, setMatchedIds] = useState(new Set());
+    const [matchesProfiles, setMatchesProfiles] = useState([]);
+    const me = auth.currentUser
+
+    useEffect(() => {
+        if (!me) return;
+        return onSnapshot(collection(db, "users"), snap => {
+            const others = snap.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .filter(p => p.id !== me.uid);
+            setProfiles(others);
+        });
+    }, [me]);
+
+    useEffect(() => {
+        if (!me) return;
+        const path = collection(db, "users", me.uid, "swipes");
+        return onSnapshot(path, snap => {
+            setSwipedIds(new Set(snap.docs.map(d => d.id)));
+        });
+    }, [me]);
+
+    useEffect(() => {
+        if (!me) return;
+        const path = collection(db, "users", me.uid, "matches");
+        return onSnapshot(path, snap => {
+          const ids = snap.docs.map(d => d.id);
+          setMatchedIds(new Set(ids));
+
+          Promise.all(ids.map(uid => getDoc(doc(db, "users", uid))))
+            .then(docs => {
+              const data = docs
+                .filter(d => d.exists())
+                .map(d => ({ id: d.id, ...d.data() }));
+              setMatchesProfiles(data);
+            });
+        });
+      }, [me]);
+
+    const deck = profiles.filter(p =>
+        !swipedIds.has(p.id) &&
+        !matchedIds.has(p.id)
+    );
+
+    const currentProfile = deck[profileIndex] || null;
+    const isDeckEmpty = deck.length === 0;
+
+
     const handleNameClick = () => {
         setBioVisible(!bioVisible);
     };
 
     const handleRefreshClick = () => {
         const randomDirection = Math.random() > 0.5 ? 1 : -1;
-        const nextItem = (profileIndex + randomDirection + mockProfiles.length) % mockProfiles.length;
+        const nextItem = (profileIndex + randomDirection + deck.length) % deck.length;
         setProfileIndex(nextItem);
         setDirection(randomDirection);
-        setIsEmptyProfiles(false);
     };
 
-    const saveSwipe = async (phantomId, direction) => {
-        setSwipes((prev) => [
-            ...prev,
-            { phantomId, direction, timestamp: Date.now() },
-        ]);
-        console.log(`(Mock) Swipe saved: ${direction} on ${phantomId}`);
+    const saveSwipe = async (otherUid, isLike) => {
+        if (!me) {
+            return;
+        }
+        const mySwipeRef = doc(db, 'users', me.uid, 'swipes', otherUid);
+        await setDoc(mySwipeRef, { liked: isLike, timestamp: serverTimestamp() });
+
+        if (isLike) {
+            const theirSwipeRef = doc(db, 'users', otherUid, 'swipes', me.uid);
+            const snap = await getDoc(theirSwipeRef);
+
+            if (snap.exists() && snap.data().liked) {
+                const matchData = { matchedAt: serverTimestamp() };
+                await Promise.all([
+                    setDoc(doc(db, 'users', me.uid, 'matches', otherUid), matchData),
+                    setDoc(doc(db, 'users', otherUid, 'matches', me.uid), matchData),
+                ]);
+            }
+        }
     };
 
     const handleDragStart = () => {
@@ -98,7 +138,11 @@ export default function MatchPage() {
                 iconRect.top + iconRect.height / 2 -
                 (imgRect.top + imgRect.height / 2);
 
-            await saveSwipe(currentProfile.id, direction);
+            await saveSwipe(currentProfile.id, isLike);
+            setProfileIndex(i => {
+                const next = i + 1;
+                return next < deck.length ? next : i;
+            });
 
             await controls.start({
                 x: x.get() + deltaX,
@@ -110,11 +154,6 @@ export default function MatchPage() {
 
             controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
             setBioVisible(false);
-            setProfileIndex((prev) => prev + 1);
-
-            if (profileIndex + 1 >= mockProfiles.length) {
-                setIsEmptyProfiles(true);
-            }
         } else {
             await controls.start({
                 x: 0,
@@ -137,8 +176,8 @@ export default function MatchPage() {
             <SideBar />
             <main className="match-main">
                 <div className="swipe-section">
-                    <div className={`swipe-card ${isEmptyProfiles ? 'empty' : ''}`} ref={cardRef}>
-                        {isEmptyProfiles ? (
+                    <div className={`swipe-card ${isDeckEmpty ? 'empty' : ''}`} ref={cardRef}>
+                        {isDeckEmpty ? (
                             <div className="no-profiles-message">
                                 <p>Sorry, no more profiles to choose from. Please refresh!</p>
                             </div>
@@ -154,8 +193,8 @@ export default function MatchPage() {
                                     {currentProfile && (
                                         <motion.img
                                             key={currentProfile.id}
-                                            src={currentProfile.img}
-                                            alt={currentProfile.name}
+                                            src={currentProfile.profilePictureUrl || ProfileImage}
+                                            alt={currentProfile.username}
                                             className="profile-image-match"
                                             drag="x"
                                             dragElastic={0.2}
@@ -178,14 +217,12 @@ export default function MatchPage() {
                                 {currentProfile && (
                                     <>
                                         <h3 className="phantom-name" onClick={handleNameClick}>
-                                            {currentProfile.name}
+                                            {currentProfile.username}
                                         </h3>
 
                                         {bioVisible && (
                                             <div className="phantom-bio">
-                                                {currentProfile.bio.split('\n').map((line, i) => (
-                                                    <span key={i}>{line}<br /></span>
-                                                ))}
+                                                {currentProfile.joke.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}
                                             </div>
                                         )}
                                     </>
@@ -204,28 +241,19 @@ export default function MatchPage() {
 
                 <div className="matched-section">
                     <h2 className="match-title">Matched phantoms</h2>
-                    <p className="match-subtitle">Your matched souls await.</p>
-
                     <div className="match-cards">
-                        {swipes
-                            .filter((s) => s.direction === 'like')
-                            .map((swipe, index) => {
-                                const match = mockProfiles.find(p => p.id === swipe.phantomId);
-                                return match ? (
-                                    <div className="match-card" key={index}>
-                                        <div className="match-header">
-                                            <img src={match.img} alt={match.name} className="match-avatar" />
-                                            <div className="match-info">
-                                                <h3>{match.name}</h3>
-                                            </div>
-                                        </div>
-                                        <p className="match-text">{match.bio}</p>
-                                        <button className="message-btn" onClick={() => handleMessageClick(match)}>
-                                            Message
-                                        </button>
-                                    </div>
-                                ) : null;
-                            })}
+                        {matchesProfiles.map((p, i) => (
+                            <div className="match-card" key={i}>
+                                <div className="match-header">
+                                    <img src={p.profilePictureUrl} alt={p.username} className="match-avatar" />
+                                    <div className="match-info"><h3>{p.username}</h3></div>
+                                </div>
+                                <p className="match-text">{p.joke}</p>
+                                <button className="message-btn" onClick={() => handleMessageClick(p)}>
+                                    Message
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </main>

@@ -1,4 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { db, storage, auth } from "../config/firebase"
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { updateDoc, doc, getDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import '../styles/ProfilePage.css';
 import SideBar from '../components/SideBar.jsx';
 import GhostAvatar from '../assets/profile-icon.png';
@@ -10,6 +14,44 @@ export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('profile-posts');
     const [showPopup, setShowPopup] = useState(false);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+    const [profile, setProfile] = useState({});
+    const [user, setUser] = useState(null);
+
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (u) => {
+          setUser(u);
+          if (u) {
+            const snap = await getDoc(doc(db, "users", u.uid));
+            if (snap.exists()) setProfile(snap.data());
+          }
+        });
+        return unsubscribe;
+      }, []);
+
+    async function handleFileChange(e) {
+        const file = e.target.files[0];
+        if (!file) {
+            return
+        }
+
+        if (!user) {
+            console.error('No user is signed in.');
+            return;
+        }
+
+        const picRef = ref(storage, `profilePics/${user.uid}`);
+
+        await uploadBytes(picRef, file);
+
+        const url = await getDownloadURL(picRef);
+
+        await updateDoc(doc(db, "users", user.uid), { profilePictureUrl: url })
+
+        setProfile(prev => ({ ...prev, profilePictureUrl: url }));
+
+        console.log('Profile picture updated!');
+    }
 
     return (
         <div className="profile-page">
@@ -17,9 +59,9 @@ export default function ProfilePage() {
             <main className="profile-main">
                 <div className="profile-container">
                     <div className="profile-header">
-                        <img src={GhostAvatar} alt="Avatar" className="avatar" />
+                        <img src={profile.profilePictureUrl || GhostAvatar} alt="Avatar" className="avatar" />
                         <div className="header-right">
-                            <h1 className="username">MyName</h1>
+                            <h1 className="username">{profile.username}</h1>
                             <div className="stats">
                                 <span><strong>0</strong> profile-posts</span>
                                 <span><strong>6</strong> friends</span>
@@ -28,7 +70,10 @@ export default function ProfilePage() {
                             <div className="header-buttons">
                                 <button className="edit-button" onClick={() => setShowPopup(true)}>Edit profile</button>
                                 <button className="signout-button" onClick={() => setShowConfirmPopup(true)}>Sign out</button>
-                               
+
+                                <input type="file" accept="image/*" onChange={handleFileChange} />
+
+
                             </div>
                         </div>
                     </div>

@@ -1,8 +1,8 @@
 import '../styles/SignupForm.css';
 // import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { db } from "../config/firebase"
-import { addDoc, collection } from "firebase/firestore"
+import { useState, useEffect } from 'react';
+import { auth, db } from "../config/firebase"
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 
 export default function SignUpForm({ onClose }) {
     // const navigate = useNavigate();
@@ -13,46 +13,81 @@ export default function SignUpForm({ onClose }) {
     const [age, setAge] = useState('');
 
     const [error, setError] = useState('');
+    const [docExists, setDocExists] = useState(false);
 
-    const usersRef = collection(db, "users");
+
+    const user = auth.currentUser;
+
+    const usersRef = doc(db, "users", user.uid);
+
+
+    useEffect(() => {
+        if (!user) return;
+        getDoc(usersRef).then(docSnap => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setName(data.username || '');
+                setAge(data.age ? data.age.toString() : '');
+                setPizza(data.pizza || '');
+                setJoke(data.joke || '');
+                setDocExists(true);
+            } else {
+                setDocExists(false);
+            }
+        });
+    }, [user]);
 
     const handleSubmit = async (event) => {
         const nameT = name.trim();
         const pizzaT = pizza.trim();
-        const jokeT= joke.trim();
+        const jokeT = joke.trim();
 
         event.preventDefault();
         setError('');
 
+
+        if (!user) {
+            setError("You must be signed in!");
+            return;
+        }
+
         if (!nameT) {
             setError('Please enter your name.');
             return;
-          }
-          if (!age) {
+        }
+        if (!age) {
             setError('Please enter your age.');
             return;
-          }
-          const ageNum = parseInt(age, 10);
-          if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
+        }
+        const ageNum = parseInt(age, 10);
+        if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
             setError('Age must be a number between 1 and 120.');
             return;
-          }
-          if (!pizzaT) {
+        }
+        if (!pizzaT) {
             setError('Please tell us your favourite pizza.');
             return;
-          }
-          if (!jokeT) {
+        }
+        if (!jokeT) {
             setError('Please share your best joke.');
             return;
-          }
+        }
+
+        const data = {
+            username: nameT,
+            age: ageNum,
+            pizza: pizzaT,
+            joke: jokeT,
+        };
+
 
         try {
-            await addDoc(usersRef, {
-                username: nameT,
-                age: ageNum,
-                pizza: pizzaT,
-                joke: jokeT
-            });
+            if (docExists) {
+                await updateDoc(usersRef, data);
+            } else {
+                await setDoc(usersRef, data);
+                setDocExists(true);
+            }
             onClose();
 
         } catch (e) {
