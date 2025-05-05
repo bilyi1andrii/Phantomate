@@ -70,6 +70,7 @@
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
+    height: 40px;
 }
 
 .bro-button:hover {
@@ -207,4 +208,8 @@
     cursor: pointer;
     padding: 0;
     transition: all 0.3s ease;
+}
+
+.bro-button.active {
+    background-color: #625b8c;
 }

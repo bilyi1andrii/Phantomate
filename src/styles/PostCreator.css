@@ -1,75 +1,75 @@
 .post-creator {
     background-color: #0C0918;
-    border: 1px solid #625b8c;
     border-radius: 15px;
     padding: 20px;
     margin-bottom: 20px;
     width: 87%;
     color: #cccbe5;
-    margin-top: 5px;
-
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    position: relative;
 }
 
 .post-creator:hover {
     box-shadow: 0 0 20px rgb(141, 92, 255);
 }
 
-.post-title {
-    width: 96%;
-    background-color: #1a172a;
-    border: 1px solid #625b8c;
-    border-radius: 10px;
+.post-description {
+    width: 90%;
+    background-color: #0C0918;
     padding: 10px;
     color: #fff;
     font-size: 16px;
     margin-bottom: 10px;
     outline: none;
+    border: none;
+    border-radius: 10px;
+    margin: 0 auto;
 }
 
 .post-description {
-    width: 96%;
-    background-color: #1a172a;
-    border: 1px solid #625b8c;
-    border-radius: 10px;
-    padding: 10px;
     height: 80px;
-    color: #cccbe5;
     resize: none;
     font-size: 14px;
-    outline: none;
-    margin-bottom: 10px;
 }
 
 .post-tools {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    gap: 10px;
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 15px;
+}
+
+.img-selector {
+    display: flex;
     gap: 10px;
 }
 
-.icon-button {
-    background: none;
-    border: none;
-    color: #ccc;
-    font-size: 18px;
+.image-upload-post, .gif-upload-post {
+    background-color: #262250;
+    border-radius: 20px;
+    padding: 8px 15px;
     cursor: pointer;
-    transition: color 0.3s ease;
+    color: #ccc;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
-.icon-button:hover {
-    color: #fff;
+.image-upload-post:hover, .gif-upload-post:hover {
+    background-color: #aaa8cc;
 }
 
 .send-button {
     background-color: #aaa8cc;
     color: black;
     border: none;
-    border-radius: 10px;
+    border-radius: 20px;
     padding: 8px 14px;
     font-weight: bold;
     font-size: 14px;

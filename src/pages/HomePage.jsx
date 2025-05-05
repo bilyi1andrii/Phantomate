@@ -9,6 +9,9 @@ import PostIm1 from '../assets/post1.png';
 import PostIm2 from '../assets/post2.png';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+
+import BroChat from '../components/Chat';
 
 export default function PhantomatePage() {
     const location = useLocation();
@@ -21,8 +24,13 @@ export default function PhantomatePage() {
     };
 
     const handleBroClick = (broIndex) => {
-        setActiveBro(broIndex);
-        setIsChatMode(true);
+        if (isChatMode && activeBro === broIndex) {
+            setIsChatMode(false);
+            setActiveBro(null);
+        } else {
+            setActiveBro(broIndex);
+            setIsChatMode(true);
+        }
     };
 
     useEffect(() => {
@@ -60,6 +68,24 @@ export default function PhantomatePage() {
                             >
                                 Bro {activeBro + 1}
                             </button>
+                        )}
+
+                        {isChatMode && (
+                        <AnimatePresence mode="wait">
+                            {activeBro !== null && (
+                            <motion.div
+                                key={activeBro}
+                                className="bro-chat-slot"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <BroChat broIndex={activeBro} onBack={() => setIsChatMode(false)} />
+                            </motion.div>
+                            )}
+                        </AnimatePresence>
                         )}
 
                         {[...Array(6)].map((_, index) => {
