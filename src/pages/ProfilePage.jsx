@@ -59,7 +59,21 @@ export default function ProfilePage() {
             <main className="profile-main">
                 <div className="profile-container">
                     <div className="profile-header">
-                        <img src={profile.profilePictureUrl || GhostAvatar} alt="Avatar" className="avatar" />
+                        <label htmlFor="avatar-upload">
+                            <img
+                                src={profile.profilePictureUrl || GhostAvatar}
+                                alt="Avatar"
+                                className="avatar"
+                                style={{ cursor: 'pointer' }}
+                            />
+                        </label>
+                        <input
+                            id="avatar-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                        />
                         <div className="header-right">
                             <h1 className="username">{profile.username}</h1>
                             <div className="stats">
@@ -70,10 +84,6 @@ export default function ProfilePage() {
                             <div className="header-buttons">
                                 <button className="edit-button" onClick={() => setShowPopup(true)}>Edit profile</button>
                                 <button className="signout-button" onClick={() => setShowConfirmPopup(true)}>Sign out</button>
-
-                                <input type="file" accept="image/*" onChange={handleFileChange} />
-
-
                             </div>
                         </div>
                     </div>
