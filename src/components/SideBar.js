@@ -5,9 +5,10 @@ import MatchIcon from '../assets/match-icon.png';
 import ChatIcon from '../assets/chat-icon.png';
 import TestIcon from '../assets/test-icon.png';
 import ProfIcon from '../assets/profile-icon.png';
-import '../styles/SideBar.css';
+import '../styles/Sidebar.css';
 
-export default function Sidebar() {
+
+export default function Sidebar({ hideProfileButton = false }) {
     return (
         <>
             <aside className="sidebar">
@@ -15,6 +16,7 @@ export default function Sidebar() {
                     <img src={LogoIcon} alt="Logo" className="logo-icon" />
                     <h1 className="logo-text">Phantomate</h1>
                 </div>
+
                 <nav className="nav-links">
                     <NavLink to="/home" className="nav-link" activeClassName="nav-link-active">
                         <img src={HomeIcon} alt="Home Icon" className="nav-icon" />
@@ -33,6 +35,7 @@ export default function Sidebar() {
                         Personality tests
                     </NavLink>
                 </nav>
+
                 <footer className="footer-side-home">
                     <p className="about-us">© 2025 | About us</p>
                     <div className="social-media">
@@ -43,11 +46,13 @@ export default function Sidebar() {
                 </footer>
             </aside>
 
-            <div className="profile-button-container">
-                <a href="/profile">
-                    <img src={ProfIcon} alt="Profile" className="profile-image" />
-                </a>
-            </div>
+            {!hideProfileButton && (
+                <div className="profile-button-container">
+                    <a href="/profile">
+                        <img src={ProfIcon} alt="Profile" className="profile-image" />
+                    </a>
+                </div>
+            )}
         </>
     );
 }
