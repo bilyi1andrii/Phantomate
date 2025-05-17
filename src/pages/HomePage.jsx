@@ -159,7 +159,7 @@ export default function PhantomatePage() {
                             </React.Fragment>
                         ))}
 
-                        {!isChatMode && (
+                        {(!chatId || !chatWith) && (
                             <button
                                 className="ghost-button"
                                 onClick={e => {
