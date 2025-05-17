@@ -107,26 +107,25 @@ export default function PhantomatePage() {
                         {conversations.map(({ chatId: cId, profile }) => (
                             <button
                                 key={cId}
-                                className={`bro-button ${chatId === cId ? 'active' : ''}`}
+                                className={`bro-button ${chatId === cId && isChatMode ? 'active' : ''}`}
                                 onClick={() => {
-                                    setChatId(cId);
-                                    setChatWith(profile);
-                                    setIsChatMode(true);
+                                    // if already open on this chat, close it
+                                    if (isChatMode && chatId === cId) {
+                                        setIsChatMode(false);
+                                        setChatId(null);
+                                        setChatWith(null);
+                                    } else {
+                                        // otherwise open it
+                                        setChatId(cId);
+                                        setChatWith(profile);
+                                        setIsChatMode(true);
+                                    }
                                 }}
                             >
                                 {profile.username}
                             </button>
                         ))}
 
-                        {!isChatMode && (
-                            <button className="ghost-button" onClick={toggleChatMode}>
-                                <img
-                                    src={GhostImage}
-                                    alt="New chat"
-                                    className="ghost-image"
-                                />
-                            </button>
-                        )}
                         {isChatMode && chatId && chatWith && (
                             <AnimatePresence mode="wait">
                                 <motion.div
@@ -149,6 +148,16 @@ export default function PhantomatePage() {
                                     />
                                 </motion.div>
                             </AnimatePresence>
+                        )}
+
+                        {(
+                            <button className="ghost-button" onClick={toggleChatMode}>
+                                <img
+                                    src={GhostImage}
+                                    alt="New chat"
+                                    className="ghost-image"
+                                />
+                            </button>
                         )}
 
                     </div>
