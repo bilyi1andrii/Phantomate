@@ -3,6 +3,7 @@ import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motio
 import { onSnapshot, collection, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../config/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import '../styles/MatchPage.css';
 import SideBar from '../components/SideBar.jsx';
 import LikeIcon from '../assets/like.png';
@@ -16,24 +17,35 @@ import ArrowNope from '../assets/matchnope.gif';
 export default function MatchPage() {
     const [bioVisible, setBioVisible] = useState(false);
     const [profileIndex, setProfileIndex] = useState(0);
-    const [direction, setDirection] = useState(1);
+    const [me, setMe] = useState(null);
+    // const [direction, setDirection] = useState(1);
+
+
+
+    const controls = useAnimation();
 
     const navigate = useNavigate();
 
     const likeRef = useRef(null);
     const nopeRef = useRef(null);
     const cardRef = useRef(null);
+    const hasInitialDeck = useRef(false);
 
     const x = useMotionValue(0);
     const rotate = useTransform(x, [-150, 150], [-10, 10]);
-    const controls = useAnimation();
 
 
     const [profiles, setProfiles] = useState([])
     const [swipedIds, setSwipedIds] = useState(new Set());
     const [matchedIds, setMatchedIds] = useState(new Set());
     const [matchesProfiles, setMatchesProfiles] = useState([]);
-    const me = auth.currentUser
+    const [deck, setDeck] = useState([]);
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            setMe(user);
+        });
+        return unsubscribe;
+    }, []);
 
     useEffect(() => {
         if (!me) return;
@@ -49,7 +61,10 @@ export default function MatchPage() {
         if (!me) return;
         const path = collection(db, "users", me.uid, "swipes");
         return onSnapshot(path, snap => {
-            setSwipedIds(new Set(snap.docs.map(d => d.id)));
+            const likedIds = snap.docs
+                .filter(d => d.data().liked === true)
+                .map(d => d.id);
+            setSwipedIds(new Set(likedIds));
         });
     }, [me]);
 
@@ -57,26 +72,41 @@ export default function MatchPage() {
         if (!me) return;
         const path = collection(db, "users", me.uid, "matches");
         return onSnapshot(path, snap => {
-          const ids = snap.docs.map(d => d.id);
-          setMatchedIds(new Set(ids));
+            const ids = snap.docs.map(d => d.id);
+            setMatchedIds(new Set(ids));
 
-          Promise.all(ids.map(uid => getDoc(doc(db, "users", uid))))
-            .then(docs => {
-              const data = docs
-                .filter(d => d.exists())
-                .map(d => ({ id: d.id, ...d.data() }));
-              setMatchesProfiles(data);
-            });
+            Promise.all(ids.map(uid => getDoc(doc(db, "users", uid))))
+                .then(docs => {
+                    const data = docs
+                        .filter(d => d.exists())
+                        .map(d => ({ id: d.id, ...d.data() }));
+                    setMatchesProfiles(data);
+                });
         });
-      }, [me]);
+    }, [me]);
 
-    const deck = profiles.filter(p =>
-        !swipedIds.has(p.id) &&
-        !matchedIds.has(p.id)
-    );
+    function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+
+    useEffect(() => {
+        if (!hasInitialDeck.current && profiles.length) {
+            const remaining = profiles.filter(p => !swipedIds.has(p.id));
+            setDeck(remaining);
+            hasInitialDeck.current = true;
+        }
+    }, [profiles, swipedIds]);
 
     const currentProfile = deck[profileIndex] || null;
-    const isDeckEmpty = deck.length === 0;
+    const isDeckEmpty = profileIndex >= deck.length;
+    // console.log(deck.length)
+    // console.log(profileIndex)
 
 
     const handleNameClick = () => {
@@ -84,11 +114,13 @@ export default function MatchPage() {
     };
 
     const handleRefreshClick = () => {
-        const randomDirection = Math.random() > 0.5 ? 1 : -1;
-        const nextItem = (profileIndex + randomDirection + deck.length) % deck.length;
-        setProfileIndex(nextItem);
-        setDirection(randomDirection);
+        const remaining = profiles.filter(p => !swipedIds.has(p.id));
+        setDeck(shuffleArray(remaining));
+        setProfileIndex(0);
+        controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
+        x.set(0);
     };
+    // console.log(deck);
 
     const saveSwipe = async (otherUid, isLike) => {
         if (!me) {
@@ -117,14 +149,16 @@ export default function MatchPage() {
         controls.set({ x: 0, rotate: 0, scale: 1, opacity: 1 });
     };
 
+    // console.log(profileIndex);
+
     const handleDragEnd = async (event, info) => {
         const offsetX = info.offset.x;
-        const velocityX = info.velocity.x;
+        // const velocityX = info.velocity.x;
 
         if (Math.abs(offsetX) > 100 && currentProfile) {
             const isLike = offsetX > 0;
-            const direction = isLike ? 'like' : 'nope';
-            const dir = isLike ? 1 : -1;
+            // const direction = isLike ? 'like' : 'nope';
+            // const dir = isLike ? 1 : -1;
             const iconRef = isLike ? likeRef : nopeRef;
 
             const iconRect = iconRef.current.getBoundingClientRect();
@@ -138,11 +172,6 @@ export default function MatchPage() {
                 iconRect.top + iconRect.height / 2 -
                 (imgRect.top + imgRect.height / 2);
 
-            await saveSwipe(currentProfile.id, isLike);
-            setProfileIndex(i => {
-                const next = i + 1;
-                return next < deck.length ? next : i;
-            });
 
             await controls.start({
                 x: x.get() + deltaX,
@@ -150,10 +179,14 @@ export default function MatchPage() {
                 scale: 0.1,
                 opacity: 0,
                 transition: { duration: 0.4, ease: 'easeInOut' },
+            }).then(() => {
+                // only after the fly-off has finished:
+                controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
+                x.set(0);
+                setProfileIndex(i => i + 1);
+                setBioVisible(false);
             });
-
-            controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
-            setBioVisible(false);
+            await saveSwipe(currentProfile.id, isLike);
         } else {
             await controls.start({
                 x: 0,
@@ -222,7 +255,7 @@ export default function MatchPage() {
 
                                         {bioVisible && (
                                             <div className="phantom-bio">
-                                                {currentProfile.joke.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}
+                                                {currentProfile.joke.split('\n').map((l, i) => <span key={i}>{l}<br /></span>)}
                                             </div>
                                         )}
                                     </>
@@ -232,7 +265,7 @@ export default function MatchPage() {
 
                         <div className="swipe-refresh-wrapper">
                             <span className="swipe-refresh-text">Two spirits, one swipe!</span>
-                            <button className="swipe-refresh" mg src={ShuffleIcon} alt="shuffle" onClick={handleRefreshClick}>
+                            <button className="swipe-refresh" onClick={handleRefreshClick}>
                                 <img src={ShuffleIcon} alt="shuffle" />
                             </button>
                         </div>
