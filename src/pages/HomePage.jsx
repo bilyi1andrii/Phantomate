@@ -150,7 +150,7 @@ export default function PhantomatePage() {
                             </AnimatePresence>
                         )}
 
-                        {(
+                        {!isChatMode && (
                             <button className="ghost-button" onClick={toggleChatMode}>
                                 <img
                                     src={GhostImage}
