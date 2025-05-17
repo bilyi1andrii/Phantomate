@@ -41,6 +41,7 @@
     align-self: center;
     padding-top: 30px;
     pointer-events: none;
+    opacity: 0.8;
 }
 
 .bro-list-content {

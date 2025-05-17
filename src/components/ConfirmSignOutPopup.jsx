@@ -10,7 +10,7 @@ export default function ConfirmSignOutPopup({ onCancel }) {
     };
 
     return (
-        <div className="confirm-signout-overlay" onClick={onCancel}>
+        <div className="confirm-signout-overlay">
             <div className="confirm-signout-card">
                 <h2>Are you sure you want to sign out?</h2>
                 <form onSubmit={handleConfirm} className="confirm-signout-form">
