@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../config/firebase";
 import '../styles/Chat.css';
 import ghostIcon from '../assets/profile-icon.png';
 import bopIcon from '../assets/phantom-profile.png';
 
-export default function BroChat({ broIndex, onBack }) {
+export default function BroChat({ chatId, chatWith, onBack }) {
     const [messages, setMessages] = useState([
     ]);
     const [input, setInput] = useState('');
@@ -19,24 +21,30 @@ export default function BroChat({ broIndex, onBack }) {
         }
     }, [messages]);
 
-    const handleSend = () => {
-        const trimmed = input.trim();
-        if (!trimmed) return;
+    useEffect(() => {
+        if (!chatId) return;
+        const q = query(
+            collection(db, "chats", chatId, "messages"),
+            orderBy("timestamp")
+        );
+        const unsub = onSnapshot(q, snap => {
+            setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        });
+        return unsub;
+    }, [chatId]);
 
-        setMessages(prev => [...prev, { sender: 'you', text: trimmed }]);
-        setInput('');
-
-        setTimeout(() => {
-            const replies = [
-                'Do you believe in echoes of the soul?',
-                'Silence can be louder than screams.',
-                'I see you.',
-                'Not every light is from the stars.',
-                'You’re not alone in the fog.'
-            ];
-            const randomReply = replies[Math.floor(Math.random() * replies.length)];
-            setMessages(prev => [...prev, { sender: 'bop', text: randomReply }]);
-        }, 1000);
+    const handleSend = async () => {
+        const text = input.trim();
+        if (!text) return;
+        await addDoc(
+            collection(db, "chats", chatId, "messages"),
+            {
+                text,
+                senderId: auth.currentUser.uid,
+                timestamp: serverTimestamp()
+            }
+        );
+        setInput("");
     };
 
     const handleKeyPress = (e) => {

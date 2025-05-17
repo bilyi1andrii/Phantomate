@@ -12,16 +12,64 @@ import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import BroChat from '../components/Chat';
+import { auth, db } from '../config/firebase';
+import {
+    collection,
+    doc,
+    getDoc,
+    onSnapshot,
+    query,
+    orderBy,
+} from 'firebase/firestore';
 
 export default function PhantomatePage() {
     const location = useLocation();
+    const [me, setMe] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [isChatMode, setIsChatMode] = useState(false);
     const [activeBro, setActiveBro] = useState(null);
 
+    const [chatId, setChatId] = useState(null);
+    const [chatWith, setChatWith] = useState(null);
+    const [conversations, setConversations] = useState([]);
+
     const toggleChatMode = () => {
         setIsChatMode(prev => !prev);
     };
+    useEffect(() => {
+        // 1) get current user
+        const unsubAuth = auth.onAuthStateChanged(u => {
+            setMe(u);
+        });
+        return unsubAuth;
+    }, []);
+
+    useEffect(() => {
+        if (!me) return;
+
+        // 2) listen for conversation docs under users/{me.uid}/conversations
+        const convCol = collection(db, 'users', me.uid, 'conversations');
+        const unsubConv = onSnapshot(
+            query(convCol, orderBy('createdAt', 'desc')),
+            async snap => {
+                // for each conversation doc, pull the other user's profile
+                const convs = await Promise.all(
+                    snap.docs.map(async d => {
+                        const otherUid = d.id;
+                        const { chatId } = d.data();
+                        const userSnap = await getDoc(doc(db, 'users', otherUid));
+                        const profile = userSnap.exists()
+                            ? { id: otherUid, ...userSnap.data() }
+                            : { id: otherUid, username: 'Unknown' };
+                        return { otherUid, chatId, profile };
+                    })
+                );
+                setConversations(convs);
+            }
+        );
+
+        return unsubConv;
+    }, [me]);
 
     const handleBroClick = (broIndex) => {
         if (isChatMode && activeBro === broIndex) {
@@ -40,72 +88,69 @@ export default function PhantomatePage() {
     }, [location.state]);
 
     useEffect(() => {
-        if (location.pathname === "/home") {
-            setIsChatMode(false);
-        }
-    }, [location.pathname]);
-
-    useEffect(() => {
-        if (location.state?.activeBro) {
-            setActiveBro(location.state.activeBro);
+        if (location.state?.openChat) {
+            setChatId(location.state.chatId);
+            setChatWith(location.state.chatWith);
             setIsChatMode(true);
+            // clear history so state doesn’t persist on reload
+            window.history.replaceState({}, "");
         }
     }, [location.state]);
+
 
     return (
         <div className="phantomate-page">
             <SideBar toggleChatMode={toggleChatMode} isChatMode={isChatMode} />
             <main className="main-content">
                 <div className={`bro-list ${isChatMode ? 'expanded' : ''}`}>
-                    <div className="bro-list-content" onClick={toggleChatMode}>
-                        {activeBro !== null && (
+                    <div className="bro-list-content">
+                        {conversations.map(({ chatId: cId, profile }) => (
                             <button
-                                className="bro-button active"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleBroClick(activeBro);
+                                key={cId}
+                                className={`bro-button ${chatId === cId ? 'active' : ''}`}
+                                onClick={() => {
+                                    setChatId(cId);
+                                    setChatWith(profile);
+                                    setIsChatMode(true);
                                 }}
                             >
-                                Bro {activeBro + 1}
+                                {profile.username}
+                            </button>
+                        ))}
+
+                        {!isChatMode && (
+                            <button className="ghost-button" onClick={toggleChatMode}>
+                                <img
+                                    src={GhostImage}
+                                    alt="New chat"
+                                    className="ghost-image"
+                                />
                             </button>
                         )}
-
-                        {isChatMode && (
-                        <AnimatePresence mode="wait">
-                            {activeBro !== null && (
-                            <motion.div
-                                key={activeBro}
-                                className="bro-chat-slot"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.3 }}
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <BroChat broIndex={activeBro} onBack={() => setIsChatMode(false)} />
-                            </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {isChatMode && chatId && chatWith && (
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={chatId}
+                                    className="bro-chat-slot"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{ duration: 0.3 }}
+                                    onClick={e => e.stopPropagation()}
+                                >
+                                    <BroChat
+                                        chatId={chatId}
+                                        chatWith={chatWith}
+                                        onBack={() => {
+                                            setIsChatMode(false);
+                                            setChatId(null);
+                                            setChatWith(null);
+                                        }}
+                                    />
+                                </motion.div>
+                            </AnimatePresence>
                         )}
 
-                        {[...Array(6)].map((_, index) => {
-                            if (index === activeBro) return null;
-                            return (
-                                <button
-                                    key={index}
-                                    className="bro-button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleBroClick(index);
-                                    }}
-                                >
-                                    Bro {index + 1}
-                                </button>
-                            );
-                        })}
-                        <button className="ghost-button">
-                            <img src={GhostImage} alt="Ghost Decoration" className="ghost-image" />
-                        </button>
                     </div>
                 </div>
 

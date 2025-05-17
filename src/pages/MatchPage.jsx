@@ -40,12 +40,21 @@ export default function MatchPage() {
     const [matchedIds, setMatchedIds] = useState(new Set());
     const [matchesProfiles, setMatchesProfiles] = useState([]);
     const [deck, setDeck] = useState([]);
+    const [conversationIds, setConversationIds] = useState(new Set());
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, user => {
             setMe(user);
         });
         return unsubscribe;
     }, []);
+
+    useEffect(() => {
+        if (!me) return;
+        const convRef = collection(db, "users", me.uid, "conversations");
+        return onSnapshot(convRef, snap => {
+            setConversationIds(new Set(snap.docs.map(d => d.id)));
+        });
+    }, [me]);
 
     useEffect(() => {
         if (!me) return;
@@ -198,9 +207,31 @@ export default function MatchPage() {
         }
     };
 
-    const handleMessageClick = (profile) => {
+    const handleMessageClick = async (profile) => {
+        if (!me) return;
+        const otherUid = profile.id;
+        // 1) Build chatId
+        const chatId = [me.uid, otherUid].sort().join("_");
+
+        // 2) Ensure chat doc exists
+        await setDoc(doc(db, "chats", chatId), {
+            participants: [me.uid, otherUid],
+            createdAt: serverTimestamp()
+        }, { merge: true });
+
+        // 3) Mirror in both users’ conversations
+        await Promise.all([
+            setDoc(doc(db, "users", me.uid, "conversations", otherUid), {
+                chatId, createdAt: serverTimestamp()
+            }),
+            setDoc(doc(db, "users", otherUid, "conversations", me.uid), {
+                chatId, createdAt: serverTimestamp()
+            })
+        ]);
+
+        // 4) Navigate into chat
         navigate("/home", {
-            state: { activeBro: profile }
+            state: { openChat: true, chatId, chatWith: profile }
         });
     };
 
@@ -275,18 +306,20 @@ export default function MatchPage() {
                 <div className="matched-section">
                     <h2 className="match-title">Matched phantoms</h2>
                     <div className="match-cards">
-                        {matchesProfiles.map((p, i) => (
-                            <div className="match-card" key={i}>
-                                <div className="match-header">
-                                    <img src={p.profilePictureUrl || ProfileImage} alt={p.username} className="match-avatar" />
-                                    <div className="match-info"><h3>{p.username}</h3></div>
-                                </div>
-                                <p className="match-text">{p.joke}</p>
-                                <button className="message-btn" onClick={() => handleMessageClick(p)}>
-                                    Message
-                                </button>
-                            </div>
-                        ))}
+                        {matchesProfiles
+                            .filter(p => !conversationIds.has(p.id))
+                            .map((p, i) => (
+                                    <div className="match-card" key={i}>
+                                        <div className="match-header">
+                                            <img src={p.profilePictureUrl || ProfileImage} alt={p.username} className="match-avatar" />
+                                            <div className="match-info"><h3>{p.username}</h3></div>
+                                        </div>
+                                        <p className="match-text">{p.joke}</p>
+                                        <button className="message-btn" onClick={() => handleMessageClick(p)}>
+                                            Message
+                                        </button>
+                                    </div>
+                                ))}
                     </div>
                 </div>
             </main>

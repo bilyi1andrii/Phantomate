@@ -45,7 +45,7 @@ export default function Sidebar({ hideProfileButton = false, toggleChatMode, isC
     const handleChatClick = (e) => {
         e.preventDefault();
         if (location.pathname !== '/home') {
-            navigate('/home');
+            navigate("/home", { state: { openChat: true } })
         }
         toggleChatMode?.();
     };
