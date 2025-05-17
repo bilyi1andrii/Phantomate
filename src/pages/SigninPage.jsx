@@ -1,6 +1,6 @@
 import '../styles/SigninPage.css';
 import React from 'react';
-import SignInImage from '../assets/signin_image.svg';
+import SignInImage from '../assets/signin_image.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
