@@ -278,7 +278,7 @@ export default function MatchPage() {
                         {matchesProfiles.map((p, i) => (
                             <div className="match-card" key={i}>
                                 <div className="match-header">
-                                    <img src={p.profilePictureUrl} alt={p.username} className="match-avatar" />
+                                    <img src={p.profilePictureUrl || ProfileImage} alt={p.username} className="match-avatar" />
                                     <div className="match-info"><h3>{p.username}</h3></div>
                                 </div>
                                 <p className="match-text">{p.joke}</p>
