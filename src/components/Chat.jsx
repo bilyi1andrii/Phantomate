@@ -57,16 +57,19 @@ export default function BroChat({ chatId, chatWith, onBack }) {
     return (
         <div className="bro-chat themed-chat">
             <div className="chat-messages">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`chat-bubble ${msg.sender}`}>
-                        <img
-                            src={msg.sender === 'you' ? ghostIcon : bopIcon}
-                            alt={msg.sender}
-                            className="chat-icon"
-                        />
-                        <div className="chat-text">{msg.text}</div>
-                    </div>
-                ))}
+                {messages.map((msg, index) => {
+                    const isYou = msg.senderId === auth.currentUser.uid;
+                    return (
+                        <div key={index} className={`chat-bubble ${isYou ? 'you' : 'bop'}`}>
+                            <img
+                                src={isYou ? ghostIcon : bopIcon}
+                                alt={isYou ? 'you' : 'bop'}
+                                className="chat-icon"
+                            />
+                            <div className="chat-text">{msg.text}</div>
+                        </div>
+                    );
+                })}
                 <div ref={messagesEndRef} />
             </div>
 

@@ -34,6 +34,13 @@
     position: relative;
 }
 
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .chat-bubble.bop {
     align-self: flex-start;
     background-color: #1a1a2e;
@@ -90,16 +97,10 @@
 }
 
 .chat-input-bar .image-upload {
-    background: #000006;
-    border: 1px solid #5c5c7a;
-    color: #fff;
-    padding: 0.4rem 1rem;
-    border-radius: 15px;
+    color: #aaa;
+    font-size: 1.2rem;
     cursor: pointer;
     flex-shrink: 0;
-    white-space: nowrap;
-    font-size: 1rem;
-    transition: font-size 0.2s ease, padding 0.2s ease;
 }
 
 .chat-input-bar .image-upload input {

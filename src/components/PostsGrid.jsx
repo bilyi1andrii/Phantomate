@@ -1,8 +1,13 @@
-import React, { useState } from "react";;
+import React, { useState } from "react";
 
-
-export default function PostsGrid({ posts, username }) {
+export default function PostsGrid({ posts: initialPosts, username }) {
+  const [posts, setPosts] = useState(initialPosts);
   const [selectedPost, setSelectedPost] = useState(null);
+
+  function handleDeletePost(id) {
+    setPosts(posts.filter(post => post.id !== id));
+    setSelectedPost(null);
+  }
 
   return (
     <>
@@ -27,6 +32,12 @@ export default function PostsGrid({ posts, username }) {
             <p className="post-text-profile">{selectedPost.description || selectedPost.title}</p>
             <img src={selectedPost.imageUrl} alt={selectedPost.title} className="post-image-profile" />
             <button className="close-button" onClick={() => setSelectedPost(null)}>×</button>
+            <button 
+              className="delete-button" 
+              onClick={() => handleDeletePost(selectedPost.id)}
+            >
+              Delete Post
+            </button>
           </div>
         </div>
       )}

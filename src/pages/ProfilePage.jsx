@@ -51,6 +51,7 @@ export default function ProfilePage() {
             { id: '2', imageUrl: PostIm2, description: 'How many programmers does it take to change a light bulb?\nNone, that’s a hardware problem! 💡🖥️' },
             { id: '3', imageUrl: PostIm1, description: 'Post 3' },
             { id: '4', imageUrl: PostIm2, description: 'Post 4' },
+            { id: '5', imageUrl: PostIm2, description: 'How many programmers does it take to change a light bulb?\nNone, that’s a hardware problem! 💡🖥️' },
             ]);
         }
 
