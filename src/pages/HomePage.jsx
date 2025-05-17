@@ -7,7 +7,7 @@ import PostIcon1 from '../assets/post-icon1.png';
 import PostIcon2 from '../assets/post-icon2.png';
 import PostIm1 from '../assets/post1.png';
 import PostIm2 from '../assets/post2.png';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -97,6 +97,14 @@ export default function PhantomatePage() {
         }
     }, [location.state]);
 
+    const sortedConvs = (() => {
+        if (!isChatMode || !chatId) return conversations;
+        // pull out the active one
+        const active = conversations.find(c => c.chatId === chatId);
+        const others = conversations.filter(c => c.chatId !== chatId);
+        return active ? [active, ...others] : conversations;
+    })();
+
 
     return (
         <div className="phantomate-page">
@@ -104,61 +112,65 @@ export default function PhantomatePage() {
             <main className="main-content">
                 <div className={`bro-list ${isChatMode ? 'expanded' : ''}`}>
                     <div className="bro-list-content">
-                        {conversations.map(({ chatId: cId, profile }) => (
-                            <button
-                                key={cId}
-                                className={`bro-button ${chatId === cId && isChatMode ? 'active' : ''}`}
-                                onClick={() => {
-                                    // if already open on this chat, close it
-                                    if (isChatMode && chatId === cId) {
-                                        setIsChatMode(false);
-                                        setChatId(null);
-                                        setChatWith(null);
-                                    } else {
-                                        // otherwise open it
-                                        setChatId(cId);
-                                        setChatWith(profile);
-                                        setIsChatMode(true);
-                                    }
-                                }}
-                            >
-                                {profile.username}
-                            </button>
-                        ))}
-
-                        {isChatMode && chatId && chatWith && (
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={chatId}
-                                    className="bro-chat-slot"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.3 }}
-                                    onClick={e => e.stopPropagation()}
-                                >
-                                    <BroChat
-                                        chatId={chatId}
-                                        chatWith={chatWith}
-                                        onBack={() => {
+                        {sortedConvs.map(({ chatId: cId, profile }) => (
+                            <React.Fragment key={cId}>
+                                <button
+                                    className={`bro-button ${chatId === cId && isChatMode ? 'active' : ''}`}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        if (isChatMode && chatId === cId) {
                                             setIsChatMode(false);
                                             setChatId(null);
                                             setChatWith(null);
-                                        }}
-                                    />
-                                </motion.div>
-                            </AnimatePresence>
-                        )}
+                                        } else {
+                                            setChatId(cId);
+                                            setChatWith(profile);
+                                            setIsChatMode(true);
+                                        }
+                                    }}
+                                >
+                                    {profile.username}
+                                </button>
 
-                        {(
-                            <button className="ghost-button" onClick={toggleChatMode}>
-                                <img
-                                    src={GhostImage}
-                                    alt="New chat"
-                                    className="ghost-image"
-                                />
+                                {/* right under the active button, open the panel */}
+                                {isChatMode && chatId === cId && chatWith && (
+                                    <AnimatePresence mode="wait">
+                                        <motion.div
+                                            className="bro-chat-slot"
+                                            key={cId + '-panel'}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.3 }}
+                                            onClick={e => e.stopPropagation()}
+                                        >
+                                            <BroChat
+                                                chatId={chatId}
+                                                chatWith={chatWith}
+                                                onBack={() => {
+                                                    setIsChatMode(false);
+                                                    setChatId(null);
+                                                    setChatWith(null);
+                                                }}
+                                            />
+                                        </motion.div>
+                                    </AnimatePresence>
+                                )}
+                            </React.Fragment>
+                        ))}
+
+                        {!isChatMode && (
+                            <button
+                                className="ghost-button"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    toggleChatMode();
+                                }}
+                            >
+                                <img src={GhostImage} alt="New chat" className="ghost-image" />
                             </button>
                         )}
+
 
                     </div>
                 </div>
