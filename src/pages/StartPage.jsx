@@ -1,7 +1,7 @@
 import '../styles/StartPage.css';
 import { useNavigate } from 'react-router-dom';
 import lineImage from '../assets/Line4.svg';
-import startImage from '../assets/start_page_ghosts.svg';
+import startImage from '../assets/start_page_ghosts.png';
 
 export default function StartPage() {
   const navigate = useNavigate();

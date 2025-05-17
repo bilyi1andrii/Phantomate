@@ -64,7 +64,7 @@ export default function BroChat({ broIndex, onBack }) {
 
             <div className="chat-input-bar">
                 <label className="image-upload">
-                    📎
+                    Img
                     <input type="file" accept="image/*" />
                 </label>
                 <input

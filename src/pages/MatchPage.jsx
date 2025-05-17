@@ -8,7 +8,7 @@ import '../styles/MatchPage.css';
 import SideBar from '../components/SideBar.jsx';
 import LikeIcon from '../assets/like.png';
 import NopeIcon from '../assets/nope.png';
-import ShuffleIcon from '../assets/shuffle.svg';
+import ShuffleIcon from '../assets/shuffle.png';
 import ProfileImage from '../assets/phantom-profile.png';
 import ArrowLike from '../assets/matchlike.gif';
 import ArrowNope from '../assets/matchnope.gif';
