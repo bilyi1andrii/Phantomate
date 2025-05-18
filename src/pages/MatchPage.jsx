@@ -207,43 +207,44 @@ export default function MatchPage() {
 
     const handleDragEnd = async (event, info) => {
         const offsetX = info.offset.x;
-
         if (Math.abs(offsetX) > 100 && currentProfile) {
             const isLike = offsetX > 0;
             const iconRef = isLike ? likeRef : nopeRef;
 
             const iconRect = iconRef.current.getBoundingClientRect();
             const imgRect = event.target.getBoundingClientRect();
+            const deltaX = iconRect.left + iconRect.width / 2 - (imgRect.left + imgRect.width / 2);
+            const deltaY = iconRect.top + iconRect.height / 2 - (imgRect.top + imgRect.height / 2);
 
-            const deltaX =
-                iconRect.left + iconRect.width / 2 -
-                (imgRect.left + imgRect.width / 2);
-
-            const deltaY =
-                iconRect.top + iconRect.height / 2 -
-                (imgRect.top + imgRect.height / 2);
-
+            const pivot = isLike ? '100% 50%' : '0% 50%';
+            const fullSpin = isLike ? 360 : -360;
 
             await controls.start({
                 x: x.get() + deltaX,
                 y: deltaY,
-                scale: 0.1,
+                rotate: [0, fullSpin],
+                skewX: [0, 15, -15, 10, 0],
+                skewY: [0, -10, 10, -5, 0],
+                scale: [1, 0.8, 0.5, 0.1],
                 opacity: 0,
-                transition: { duration: 0.4, ease: 'easeInOut' },
-            }).then(() => {
-                controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
-                x.set(0);
-                setProfileIndex(i => i + 1);
-                setBioVisible(false);
+                transition: {
+                    duration: 0.7,
+                    ease: 'easeInOut'
+                }
+            }, {
+                transformOrigin: pivot
             });
+            controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, skewX: 0, skewY: 0 });
+            x.set(0);
+            setProfileIndex(i => i + 1);
+            setBioVisible(false);
+
             await saveSwipe(currentProfile.id, isLike);
         } else {
             await controls.start({
-                x: 0,
-                rotate: 0,
-                scale: 1,
-                opacity: 1,
-                transition: { type: 'spring', stiffness: 300, damping: 30 },
+                x: 0, rotate: 0, skewX: 0, skewY: 0,
+                scale: 1, opacity: 1,
+                transition: { type: 'spring', stiffness: 300, damping: 30 }
             });
         }
     };
