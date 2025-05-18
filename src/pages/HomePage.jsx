@@ -3,10 +3,7 @@ import SignUpForm from '../components/SignUpForm';
 import SideBar from '../components/SideBar.jsx';
 import PostCreator from '../components/PostCreator';
 import GhostImage from '../assets/cuteghost.gif';
-import PostIcon1 from '../assets/post-icon1.png';
-import PostIcon2 from '../assets/post-icon2.png';
-import PostIm1 from '../assets/post1.png';
-import PostIm2 from '../assets/post2.png';
+
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -38,7 +35,47 @@ export default function PhantomatePage() {
     const [conversations, setConversations] = useState([]);
 
     const [unreadChats, setUnreadChats] = useState(new Set());
+    const [posts, setPosts] = useState([]);
 
+    useEffect(() => {
+        const q = query(
+            collection(db, 'posts'),
+            orderBy('timestamp', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, snap => {
+            (async () => {
+                const postsWithAuthors = await Promise.all(
+                    snap.docs.map(async d => {
+                        const data = d.data();
+                        let user = { username: 'Unknown', photoURL: '' };
+
+                        if (data.author) {
+                            const userSnap = await getDoc(data.author);
+                            if (userSnap.exists()) {
+                                user = userSnap.data();
+                            }
+                        }
+
+                        return {
+                            id: d.id,
+                            imageURL: data.imageURL,
+                            caption: data.caption,
+                            timestamp: data.timestamp,
+                            author: {
+                                username: user.username,
+                                photoURL: user.profilePictureUrl
+                            }
+                        };
+                    })
+                );
+
+                setPosts(postsWithAuthors);
+            })();
+        });
+
+        return () => unsubscribe();
+    }, [db]);
     useEffect(() => {
         if (!conversations.length) return;
 
@@ -230,24 +267,17 @@ export default function PhantomatePage() {
                 </div>
 
                 <div className={`posts ${isChatMode ? 'compressed' : ''}`}>
-                    <PostCreator />
-                    <div className="post">
-                        <div className="post-header">
-                            <img src={PostIcon1} alt="Ghost Avatar" className="post-avatar" />
-                            <h2 className="post-username">Umbrelith</h2>
+                    <PostCreator me={me} />
+                    {posts.map(p => (
+                        <div key={p.id} className="post">
+                            <div className="post-header">
+                                <img src={p.author.photoURL || bopIcon} alt="" className="post-avatar" />
+                                <h2 className="post-username">{p.author.username}</h2>
+                            </div>
+                            <p className="post-text">{p.caption}</p>
+                            {p.imageURL && <img src={p.imageURL} className="post-image" alt="" />}
                         </div>
-                        <p className="post-text">"Where shadows connect..."</p>
-                        <img src={PostIm1} alt="Umbrelith" className="post-image" />
-                    </div>
-
-                    <div className="post">
-                        <div className="post-header">
-                            <img src={PostIcon2} alt="Ghost Avatar" className="post-avatar" />
-                            <h2 className="post-username">Nyxveil</h2>
-                        </div>
-                        <p className="post-text">"Not every connection needs..."</p>
-                        <img src={PostIm2} alt="Nyxveil" className="post-image" />
-                    </div>
+                    ))}
                 </div>
 
                 {showModal && (

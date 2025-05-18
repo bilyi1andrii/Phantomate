@@ -1,56 +1,82 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import '../styles/PostCreator.css';
+import { storage } from '../config/firebase';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, auth } from '../config/firebase';
+import { collection, addDoc, serverTimestamp, doc } from 'firebase/firestore';
 
-export default function PostCreator() {
-    const [imagePreview, setImagePreview] = useState(null);
+export default function PostCreator({ me }) {
     const [text, setText] = useState('');
+    const [imagePreview, setImagePreview] = useState(null);
+    const [imgRef, setImgRef] = useState(null);
+    const fileInputRef = useRef(null);
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async e => {
         const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => setImagePreview(reader.result);
+        reader.readAsDataURL(file);
+        const iRef = storageRef(storage, `posts/pictures/${Date.now()}_${file.name}`);
+        await uploadBytes(iRef, file);
+        setImgRef(iRef);
+    };
+
+    const handlePost = async e => {
+        e.preventDefault();
+        if (!me) return;
+        if (!imgRef) {
+            alert("Please add an image before posting!");
+            return;
         }
+        const imageURL = imgRef ? await getDownloadURL(imgRef) : null;
+        const storagePath = imgRef ? imgRef.fullPath : null;
+
+        await addDoc(collection(db, "posts"), {
+            imageURL,
+            storagePath,
+            caption: text.trim() || null,
+            author: doc(db, 'users', auth.currentUser.uid),
+            timestamp: serverTimestamp()
+        });
+
+        setText('');
+        setImagePreview(null);
+        setImgRef(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
-    const handleTextChange = (e) => {
-        setText(e.target.value);
-    };
-
-    const shouldShowPostButton = text.trim() !== '' || imagePreview;
+    const canPost = !!imgRef;
 
     return (
-        <div className="post-creator">
-            <textarea
+        <form className="post-creator" onSubmit={handlePost}>
+            <input
                 className="post-description"
-                placeholder="Description. Start an interesting conversation or share something wholesome."
+                placeholder="Description…"
                 value={text}
-                onChange={handleTextChange}
+                onChange={e => setText(e.target.value)}
             />
-            
-            {imagePreview && (
-                <img src={imagePreview} alt="Preview" className="post-image" />
-            )}
-
+            {imagePreview && <img src={imagePreview} alt="Preview" className="post-image" />}
             <div className="post-tools">
-                <div className="img-selector">
-                    <label className="image-upload-post">
-                        Img
-                        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
-                    </label>
-                    <label className="gif-upload-post">
-                        GIF
-                        <input type="file" accept="image/*" style={{ display: 'none' }} />
-                    </label>
-                </div>
-
-                {shouldShowPostButton && (
-                    <button className="send-button">Post</button>
-                )}
+                <label className="image-upload-post">
+                    Img
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleImageChange}
+                    />
+                </label>
+                <button
+                    className="send-button"
+                    type="submit"
+                    disabled={!canPost}
+                    style={{ opacity: canPost ? 1 : 0.5, cursor: canPost ? 'pointer' : 'not-allowed' }}
+                >
+                    Post
+                </button>
             </div>
-        </div>
+        </form>
     );
 }

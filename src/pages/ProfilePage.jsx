@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db, storage, auth } from "../config/firebase"
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { updateDoc, doc, getDoc } from 'firebase/firestore';
+import { updateDoc, doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import '../styles/ProfilePage.css';
 import SideBar from '../components/SideBar.jsx';
@@ -10,8 +10,6 @@ import EmptyGhost from '../assets/cuteghost.png';
 import SignUpForm from '../components/SignUpForm';
 import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 import PostsGrid from '../components/PostsGrid.jsx';
-import PostIm1 from '../assets/post1.png';
-import PostIm2 from '../assets/post2.png';
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('profile-posts');
@@ -20,6 +18,8 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState({});
     const [user, setUser] = useState(null);
     const [posts, setPosts] = useState([]);
+    const [friendsCount, setFriendsCount] = useState(0);
+    const [postsCount, setPostsCount] = useState(0);
 
     const orderedFields = [
         { key: 'username', label: 'Name' },
@@ -42,20 +42,44 @@ export default function ProfilePage() {
 
 
     useEffect(() => {
-        if (!user) return;
-
-        async function fetchPosts() {
-
-            setPosts([
-                { id: '1', imageUrl: PostIm1, description: 'Why do Java developers wear glasses?\nBecause they don’t see sharp! 😎' },
-                { id: '2', imageUrl: PostIm2, description: 'How many programmers does it take to change a light bulb?\nNone, that’s a hardware problem! 💡🖥️' },
-                { id: '3', imageUrl: PostIm1, description: 'Post 3' },
-                { id: '4', imageUrl: PostIm2, description: 'Post 4' },
-                { id: '5', imageUrl: PostIm2, description: 'How many programmers does it take to change a light bulb?\nNone, that’s a hardware problem! 💡🖥️' },
-            ]);
+        if (!user) {
+            setPosts([]);
+            setPostsCount(0);
+            return;
         }
 
-        fetchPosts();
+        (async () => {
+            const authorRef = doc(db, 'users', user.uid);
+
+            const q = query(
+                collection(db, 'posts'),
+                where('author', '==', authorRef)
+            );
+
+            const snap = await getDocs(q);
+            setPostsCount(snap.size);
+            const posts = snap.docs.map(d => ({
+                id: d.id,
+                ...d.data()
+            }));
+            setPosts(posts);
+        })();
+    }, [user]);
+
+    useEffect(() => {
+        if (!user) {
+            setPosts([]);
+            setFriendsCount(0);
+            return;
+        }
+
+        (async () => {
+
+            const friendsSnap = await getDocs(
+                collection(db, 'users', user.uid, 'matches')
+            );
+            setFriendsCount(friendsSnap.size);
+        })();
     }, [user]);
 
     async function handleFileChange(e) {
@@ -106,8 +130,8 @@ export default function ProfilePage() {
                             <div className="name-stats">
                                 <h1 className="username">{profile.username || "User"}</h1>
                                 <div className="stats">
-                                    <span><strong>0</strong> profile-posts</span>
-                                    <span><strong>6</strong> friends</span>
+                                    <span><strong>{postsCount}</strong> profile-posts</span>
+                                    <span><strong>{friendsCount}</strong> friends</span>
                                 </div>
                             </div>
                             <div className="header-buttons">
@@ -145,7 +169,12 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
                             ) : (
-                                <PostsGrid posts={posts} username={profile.username} />
+                                <PostsGrid
+                                    posts={posts}
+                                    username={profile.username}
+                                    onDelete={deletedId => {
+                                        setPosts(prev => prev.filter(p => p.id !== deletedId));
+                                    }} />
                             )}
                         </>
                     )}
