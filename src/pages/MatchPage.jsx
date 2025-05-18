@@ -3,12 +3,11 @@ import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motio
 import { onSnapshot, collection, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../config/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
 import '../styles/MatchPage.css';
 import SideBar from '../components/SideBar.jsx';
 import LikeIcon from '../assets/like.png';
 import NopeIcon from '../assets/nope.png';
-import ShuffleIcon from '../assets/shuffle.png';
+import ShuffleIcon from '../assets/shuffle.svg';
 import ProfileImage from '../assets/phantom-profile.png';
 import ArrowLike from '../assets/matchlike.gif';
 import ArrowNope from '../assets/matchnope.gif';
@@ -17,74 +16,24 @@ import ArrowNope from '../assets/matchnope.gif';
 export default function MatchPage() {
     const [bioVisible, setBioVisible] = useState(false);
     const [profileIndex, setProfileIndex] = useState(0);
-    const [me, setMe] = useState(null);
-
-    const controls = useAnimation();
+    const [direction, setDirection] = useState(1);
 
     const navigate = useNavigate();
 
     const likeRef = useRef(null);
     const nopeRef = useRef(null);
     const cardRef = useRef(null);
-    const hasInitialDeck = useRef(false);
 
     const x = useMotionValue(0);
     const rotate = useTransform(x, [-150, 150], [-10, 10]);
+    const controls = useAnimation();
 
 
     const [profiles, setProfiles] = useState([])
     const [swipedIds, setSwipedIds] = useState(new Set());
     const [matchedIds, setMatchedIds] = useState(new Set());
     const [matchesProfiles, setMatchesProfiles] = useState([]);
-    const [deck, setDeck] = useState([]);
-    const [conversationIds, setConversationIds] = useState(new Set());
-
-    const [swipesLoaded, setSwipesLoaded] = useState(false);
-    const [matchesLoaded, setMatchesLoaded] = useState(false);
-
-
-    useEffect(() => {
-        hasInitialDeck.current = false;
-    }, [me?.uid]);
-
-    useEffect(() => {
-        let unsubProfile = null;
-
-        const unsubscribeAuth = onAuthStateChanged(auth, user => {
-            if (user) {
-                unsubProfile = onSnapshot(
-                    doc(db, 'users', user.uid),
-                    snap => {
-                        if (snap.exists()) {
-                            setMe({ uid: snap.id, ...snap.data() });
-                        } else {
-                            setMe({
-                                uid: user.uid,
-                                username: user.displayName || 'You',
-                                photoURL: user.photoURL || ghostIcon
-                            });
-                        }
-                    },
-                    err => console.error(err)
-                );
-            } else {
-                setMe(null);
-            }
-        });
-
-        return () => {
-            unsubscribeAuth();
-            if (unsubProfile) unsubProfile();
-        };
-    }, []);
-
-    useEffect(() => {
-        if (!me) return;
-        const convRef = collection(db, "users", me.uid, "conversations");
-        return onSnapshot(convRef, snap => {
-            setConversationIds(new Set(snap.docs.map(d => d.id)));
-        });
-    }, [me]);
+    const me = auth.currentUser
 
     useEffect(() => {
         if (!me) return;
@@ -98,71 +47,36 @@ export default function MatchPage() {
 
     useEffect(() => {
         if (!me) return;
-        setSwipesLoaded(false);
         const path = collection(db, "users", me.uid, "swipes");
         return onSnapshot(path, snap => {
-            const likedIds = snap.docs
-                .filter(d => d.data().liked === true)
-                .map(d => d.id);
-            setSwipedIds(new Set(likedIds));
-            setSwipesLoaded(true);
+            setSwipedIds(new Set(snap.docs.map(d => d.id)));
         });
     }, [me]);
 
     useEffect(() => {
         if (!me) return;
-        setMatchesLoaded(false);
         const path = collection(db, "users", me.uid, "matches");
         return onSnapshot(path, snap => {
-            const ids = snap.docs.map(d => d.id);
-            setMatchedIds(new Set(ids));
-            setMatchesLoaded(true);
+          const ids = snap.docs.map(d => d.id);
+          setMatchedIds(new Set(ids));
 
-            Promise.all(ids.map(uid => getDoc(doc(db, "users", uid))))
-                .then(docs => {
-                    const data = docs
-                        .filter(d => d.exists())
-                        .map(d => ({ id: d.id, ...d.data() }));
-                    setMatchesProfiles(data);
-                });
+          Promise.all(ids.map(uid => getDoc(doc(db, "users", uid))))
+            .then(docs => {
+              const data = docs
+                .filter(d => d.exists())
+                .map(d => ({ id: d.id, ...d.data() }));
+              setMatchesProfiles(data);
+            });
         });
-    }, [me]);
+      }, [me]);
 
-    function shuffleArray(array) {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    }
-
-
-    useEffect(() => {
-        if (!me) return;
-        if (hasInitialDeck.current) return;
-        if (!swipesLoaded || !matchesLoaded) return;
-        if (profiles.length === 0) return;
-
-        const remaining = profiles.filter(p =>
-            !swipedIds.has(p.id) &&
-            !matchedIds.has(p.id)
-        );
-
-        setDeck(remaining);
-        setProfileIndex(0);
-        hasInitialDeck.current = true;
-    }, [
-        me,
-        profiles,
-        swipedIds,
-        matchedIds,
-        swipesLoaded,
-        matchesLoaded
-    ]);
+    const deck = profiles.filter(p =>
+        !swipedIds.has(p.id) &&
+        !matchedIds.has(p.id)
+    );
 
     const currentProfile = deck[profileIndex] || null;
-    const isDeckEmpty = profileIndex >= deck.length;
+    const isDeckEmpty = deck.length === 0;
 
 
     const handleNameClick = () => {
@@ -170,11 +84,10 @@ export default function MatchPage() {
     };
 
     const handleRefreshClick = () => {
-        const remaining = profiles.filter(p => !swipedIds.has(p.id) && !matchedIds.has(p.id));
-        setDeck(shuffleArray(remaining));
-        setProfileIndex(0);
-        controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
-        x.set(0);
+        const randomDirection = Math.random() > 0.5 ? 1 : -1;
+        const nextItem = (profileIndex + randomDirection + deck.length) % deck.length;
+        setProfileIndex(nextItem);
+        setDirection(randomDirection);
     };
 
     const saveSwipe = async (otherUid, isLike) => {
@@ -203,80 +116,64 @@ export default function MatchPage() {
         x.set(0);
         controls.set({ x: 0, rotate: 0, scale: 1, opacity: 1 });
     };
-    ;
 
     const handleDragEnd = async (event, info) => {
         const offsetX = info.offset.x;
+        const velocityX = info.velocity.x;
+
         if (Math.abs(offsetX) > 100 && currentProfile) {
             const isLike = offsetX > 0;
+            const direction = isLike ? 'like' : 'nope';
+            const dir = isLike ? 1 : -1;
             const iconRef = isLike ? likeRef : nopeRef;
 
             const iconRect = iconRef.current.getBoundingClientRect();
             const imgRect = event.target.getBoundingClientRect();
-            const deltaX = iconRect.left + iconRect.width / 2 - (imgRect.left + imgRect.width / 2);
-            const deltaY = iconRect.top + iconRect.height / 2 - (imgRect.top + imgRect.height / 2);
 
-            const pivot = isLike ? '100% 50%' : '0% 50%';
-            const fullSpin = isLike ? 360 : -360;
+            const deltaX =
+                iconRect.left + iconRect.width / 2 -
+                (imgRect.left + imgRect.width / 2);
+
+            const deltaY =
+                iconRect.top + iconRect.height / 2 -
+                (imgRect.top + imgRect.height / 2);
+
+            await saveSwipe(currentProfile.id, isLike);
+            setProfileIndex(i => {
+                const next = i + 1;
+                return next < deck.length ? next : i;
+            });
 
             await controls.start({
                 x: x.get() + deltaX,
                 y: deltaY,
-                rotate: [0, fullSpin],
-                skewX: [0, 15, -15, 10, 0],
-                skewY: [0, -10, 10, -5, 0],
-                scale: [1, 0.8, 0.5, 0.1],
+                scale: 0.1,
                 opacity: 0,
-                transition: {
-                    duration: 0.7,
-                    ease: 'easeInOut'
-                }
-            }, {
-                transformOrigin: pivot
+                transition: { duration: 0.4, ease: 'easeInOut' },
             });
-            controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, skewX: 0, skewY: 0 });
-            x.set(0);
-            setProfileIndex(i => i + 1);
-            setBioVisible(false);
 
-            await saveSwipe(currentProfile.id, isLike);
+            controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
+            setBioVisible(false);
         } else {
             await controls.start({
-                x: 0, rotate: 0, skewX: 0, skewY: 0,
-                scale: 1, opacity: 1,
-                transition: { type: 'spring', stiffness: 300, damping: 30 }
+                x: 0,
+                rotate: 0,
+                scale: 1,
+                opacity: 1,
+                transition: { type: 'spring', stiffness: 300, damping: 30 },
             });
         }
     };
 
-    const handleMessageClick = async (profile) => {
-        if (!me) return;
-        const otherUid = profile.id;
-
-        const chatId = [me.uid, otherUid].sort().join("_");
-
-        await setDoc(doc(db, "chats", chatId), {
-            participants: [me.uid, otherUid],
-            createdAt: serverTimestamp()
-        }, { merge: true });
-
-        await Promise.all([
-            setDoc(doc(db, "users", me.uid, "conversations", otherUid), {
-                chatId, createdAt: serverTimestamp()
-            }),
-            setDoc(doc(db, "users", otherUid, "conversations", me.uid), {
-                chatId, createdAt: serverTimestamp()
-            })
-        ]);
-
+    const handleMessageClick = (profile) => {
         navigate("/home", {
-            state: { openChat: true, chatId, chatWith: profile }
+            state: { activeBro: profile }
         });
     };
 
     return (
         <div className="match-page">
-            <SideBar me={me} />
+            <SideBar />
             <main className="match-main">
                 <div className="swipe-section">
                     <div className={`swipe-card ${isDeckEmpty ? 'empty' : ''}`} ref={cardRef}>
@@ -325,7 +222,7 @@ export default function MatchPage() {
 
                                         {bioVisible && (
                                             <div className="phantom-bio">
-                                                {currentProfile.joke.split('\n').map((l, i) => <span key={i}>{l}<br /></span>)}
+                                                {currentProfile.joke.split('\n').map((l,i)=><span key={i}>{l}<br/></span>)}
                                             </div>
                                         )}
                                     </>
@@ -335,7 +232,7 @@ export default function MatchPage() {
 
                         <div className="swipe-refresh-wrapper">
                             <span className="swipe-refresh-text">Two spirits, one swipe!</span>
-                            <button className="swipe-refresh" onClick={handleRefreshClick}>
+                            <button className="swipe-refresh" mg src={ShuffleIcon} alt="shuffle" onClick={handleRefreshClick}>
                                 <img src={ShuffleIcon} alt="shuffle" />
                             </button>
                         </div>
@@ -345,20 +242,18 @@ export default function MatchPage() {
                 <div className="matched-section">
                     <h2 className="match-title">Matched phantoms</h2>
                     <div className="match-cards">
-                        {matchesProfiles
-                            .filter(p => !conversationIds.has(p.id))
-                            .map((p, i) => (
-                                <div className="match-card" key={i}>
-                                    <div className="match-header">
-                                        <img src={p.profilePictureUrl || ProfileImage} alt={p.username} className="match-avatar" />
-                                        <div className="match-info"><h3>{p.username}</h3></div>
-                                    </div>
-                                    <p className="match-text">{p.joke}</p>
-                                    <button className="message-btn" onClick={() => handleMessageClick(p)}>
-                                        Message
-                                    </button>
+                        {matchesProfiles.map((p, i) => (
+                            <div className="match-card" key={i}>
+                                <div className="match-header">
+                                    <img src={p.profilePictureUrl} alt={p.username} className="match-avatar" />
+                                    <div className="match-info"><h3>{p.username}</h3></div>
                                 </div>
-                            ))}
+                                <p className="match-text">{p.joke}</p>
+                                <button className="message-btn" onClick={() => handleMessageClick(p)}>
+                                    Message
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </main>

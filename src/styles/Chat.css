@@ -1,16 +1,16 @@
 .themed-chat {
-    padding: 1rem;
+    padding: 2rem;
     background-color: #0d0c1d;
-    height: calc(100vh - 13rem);
+    height: 700px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    box-sizing: border-box;
 }
 
 .chat-messages {
     flex: 1;
+    flex-grow: 1;
     width: 100%;
     max-width: 700px;
     overflow-y: auto;
@@ -32,13 +32,6 @@
     font-size: 0.95rem;
     line-height: 1.4;
     position: relative;
-}
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .chat-bubble.bop {
@@ -73,34 +66,31 @@
 .chat-input-bar {
     display: flex;
     align-items: center;
-    padding: 1rem;
+    justify-content: space-between;
+    padding: 1rem 2rem;
     width: 100%;
     max-width: 700px;
     box-sizing: border-box;
     border-top: 0.5px solid #868cd7;
-    gap: 0.75rem;
+    gap: 1rem;
     background-color: #1a1a2e;
     border-radius: 5px;
-    flex-wrap: wrap;
 }
 
 .chat-input-bar input[type="text"] {
-    flex: 1 1 auto;
-    min-width: 0;
+    flex: 1;
     background: #1a1a2e;
     border: 1px solid #5c5c7a;
     border-radius: 15px;
     padding: 0.6rem 1rem;
     color: #fff;
     font-size: 1rem;
-    transition: font-size 0.2s ease;
 }
 
 .chat-input-bar .image-upload {
     color: #aaa;
     font-size: 1.2rem;
     cursor: pointer;
-    flex-shrink: 0;
 }
 
 .chat-input-bar .image-upload input {
@@ -111,91 +101,13 @@
     background: #000006;
     border: 1px solid #5c5c7a;
     color: #fff;
-    padding: 0.6rem 1.1rem;
+    padding: 0.7rem 1.2rem;
     border-radius: 15px;
     cursor: pointer;
-    flex-shrink: 0;
-    white-space: nowrap;
-    font-size: 1rem;
-    transition: font-size 0.2s ease, padding 0.2s ease;
 }
 
 .chat-input-bar button:hover {
     background: #2d2274;
     transform: scale(1.05);
-}
 
-@media (max-width: 600px) {
-    .chat-input-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.6rem;
-        padding: 0.75rem;
-    }
-
-    .chat-input-bar input[type="text"] {
-        width: 100%;
-        font-size: 0.9rem;
-    }
-
-    .chat-input-bar button {
-        font-size: 0.9rem;
-        padding: 0.5rem 1rem;
-        width: 100%;
-    }
-
-    .chat-input-bar .image-upload {
-        font-size: 1rem;
-        align-self: flex-end;
-    }
-}
-
-@media (max-width: 400px) {
-    .chat-input-bar input[type="text"],
-    .chat-input-bar button {
-        font-size: 0.85rem;
-        padding: 0.4rem 0.8rem;
-    }
-}
-
-.chat-image {
-  max-width: 200px;
-  border-radius: 8px;
-  margin-top: 4px;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  max-width: 90%;
-  width: 300px;
-  text-align: center;
-}
-
-.modal-image-preview {
-  max-width: 100%;
-  border-radius: 4px;
-  margin: 0.5rem 0;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-}
-
-.modal-buttons button {
-  flex: 1;
-  margin: 0 0.25rem;
 }

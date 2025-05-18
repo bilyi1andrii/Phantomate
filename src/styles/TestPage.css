@@ -18,12 +18,10 @@
 }
 
 .intro-section {
-  display: flex;
-  gap: 15vw;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10vh;
-  padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 200px;
 }
 
 .intro-text h1 {
@@ -32,6 +30,7 @@
 }
 
 .intro-text p {
+    max-width: 500px;
     color: #cccbe5;
     font-size: 16px;
     margin-bottom: 40px;
@@ -45,6 +44,7 @@
     color: white;
     font-size: 16px;
     cursor: pointer;
+    transition: background 0.3s ease;
 }
 
 .take-test-btn:hover {
@@ -56,34 +56,6 @@
     height: auto;
     border-radius: 20px;
     opacity: 0.9;
-}
-
-@media (max-width: 1000px) {
-  .intro-section {
-    flex-direction: column-reverse;
-    gap: 30px;
-  }
-  
-  .boo-image {
-    width: 45vw;
-    max-width: 400px;
-    margin-bottom: 20px;
-  }
-
-  .intro-text h1 {
-    font-size: 28px;
-    margin-bottom: 30px;
-  }
-
-  .intro-text p {
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
-
-  .take-test-btn {
-    padding: 15px 30px;
-    font-size: 14px;
-  }
 }
 
 .questionnaire {
@@ -102,7 +74,7 @@
 
 .question-text {
     margin-bottom: 20px;
-    font-size: 17px;
+    font-size: 15px;
 }
 
 .options {
@@ -129,6 +101,7 @@
     border-radius: 30%;
     display: inline-block;
     position: relative;
+    transition: background 0.3s ease;
     transform-origin: center;
 }
 
@@ -151,40 +124,22 @@
 
 .option-circle:nth-child(2) .checkmark {
     transform: scale(1.4);
-    cursor: pointer;
-
 }
 .option-circle:nth-child(3) .checkmark {
     transform: scale(1.1);
-    cursor: pointer;
 }
 .option-circle:nth-child(4) .checkmark {
     transform: scale(0.9);
-    cursor: pointer;
 }
 
 .option-circle:nth-child(5) .checkmark {
     transform: scale(1.1);
-    cursor: pointer;
 }
 .option-circle:nth-child(6) .checkmark {
     transform: scale(1.4);
-    cursor: pointer;
 }
 
 .option-circle input[type="radio"]:checked + .checkmark {
     background-color: #7663f3;
     border-color: #7663f3;
-}
-
-.options > span {
-  position: relative;
-  font-size: 16px;
-  font-weight: 500;
-  color: #ffffff;
-  user-select: none;
-  border: 1px solid #7663f3;
-  border-radius: 10px;
-  padding: 5px;
-  opacity: 0.7;
 }

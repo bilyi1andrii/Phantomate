@@ -7,128 +7,34 @@ import PostIcon1 from '../assets/post-icon1.png';
 import PostIcon2 from '../assets/post-icon2.png';
 import PostIm1 from '../assets/post1.png';
 import PostIm2 from '../assets/post2.png';
-import React, { useState, useEffect } from 'react';
+import Post from '../components/Post';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import ghostIcon from '../assets/profile-icon.png';
-import bopIcon from '../assets/phantom-profile.png';
-import { onAuthStateChanged } from 'firebase/auth';
-
+import { db } from "../config/firebase"
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import BroChat from '../components/Chat';
-import { auth, db } from '../config/firebase';
-import {
-    collection,
-    doc,
-    getDoc,
-    onSnapshot,
-    query,
-    orderBy,
-    limit
-} from 'firebase/firestore';
 
 export default function PhantomatePage() {
     const location = useLocation();
-    const [me, setMe] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [isChatMode, setIsChatMode] = useState(false);
-
-    const [chatId, setChatId] = useState(null);
-    const [chatWith, setChatWith] = useState(null);
-    const [conversations, setConversations] = useState([]);
-
-    const [unreadChats, setUnreadChats] = useState(new Set());
-
-    useEffect(() => {
-        if (!conversations.length) return;
-
-        const unsubscribers = conversations.map(({ chatId: convId }) => {
-            const latestMsgQuery = query(
-                collection(db, "chats", convId, "messages"),
-                orderBy("timestamp", "desc"),
-                limit(1)
-            );
-
-            return onSnapshot(latestMsgQuery, snap => {
-                if (snap.empty) return;
-                const msg = snap.docs[0].data();
-
-                if (
-                    msg.senderId !== auth.currentUser.uid &&
-                    convId !== chatId
-                ) {
-                    setUnreadChats(prev => {
-                        const next = new Set(prev);
-                        next.add(convId);
-                        return next;
-                    });
-                }
-            });
-        });
-
-        return () => unsubscribers.forEach(unsub => unsub());
-    }, [conversations, chatId]);
+    const [activeBro, setActiveBro] = useState(null);
+    const [posts, setPosts] = useState([]);
 
     const toggleChatMode = () => {
         setIsChatMode(prev => !prev);
     };
-    useEffect(() => {
-        let unsubProfile = null;
 
-        const unsubscribeAuth = onAuthStateChanged(auth, user => {
-            if (user) {
-                unsubProfile = onSnapshot(
-                    doc(db, 'users', user.uid),
-                    snap => {
-                        if (snap.exists()) {
-                            setMe({ uid: snap.id, ...snap.data() });
-                        } else {
-                            setMe({
-                                uid: user.uid,
-                                username: user.displayName || 'You',
-                                photoURL: user.photoURL || ghostIcon
-                            });
-                        }
-                    },
-                    err => console.error(err)
-                );
-            } else {
-                setMe(null);
-            }
-        });
-
-        return () => {
-            unsubscribeAuth();
-            if (unsubProfile) unsubProfile();
-        };
-    }, []);
-
-
-
-    useEffect(() => {
-        if (!me) return;
-
-        const convCol = collection(db, 'users', me.uid, 'conversations');
-        const unsubConv = onSnapshot(
-            query(convCol, orderBy('createdAt', 'desc')),
-            async snap => {
-                const convs = await Promise.all(
-                    snap.docs.map(async d => {
-                        const otherUid = d.id;
-                        const { chatId } = d.data();
-                        const userSnap = await getDoc(doc(db, 'users', otherUid));
-                        const profile = userSnap.exists()
-                            ? { id: otherUid, ...userSnap.data() }
-                            : { id: otherUid, username: 'Unknown' };
-                        return { otherUid, chatId, profile };
-                    })
-                );
-                setConversations(convs);
-            }
-        );
-
-        return unsubConv;
-    }, [me]);
-
+    const handleBroClick = (broIndex) => {
+        if (isChatMode && activeBro === broIndex) {
+            setIsChatMode(false);
+            setActiveBro(null);
+        } else {
+            setActiveBro(broIndex);
+            setIsChatMode(true);
+        }
+    };
 
     useEffect(() => {
         if (location.state?.showSignupForm) {
@@ -137,116 +43,102 @@ export default function PhantomatePage() {
     }, [location.state]);
 
     useEffect(() => {
-        if (location.state?.openChat) {
-            setChatId(location.state.chatId);
-            setChatWith(location.state.chatWith);
+        if (location.pathname === "/home") {
+            setIsChatMode(false);
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
+        if (location.state?.activeBro) {
+            setActiveBro(location.state.activeBro);
             setIsChatMode(true);
-            window.history.replaceState({}, "");
         }
     }, [location.state]);
 
-    const sortedConvs = (() => {
-        if (!isChatMode || !chatId) return conversations;
-        const active = conversations.find(c => c.chatId === chatId);
-        const others = conversations.filter(c => c.chatId !== chatId);
-        return active ? [active, ...others] : conversations;
-    })();
+    useEffect(() => {
+        const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const postsArray = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setPosts(postsArray);
+        });
+
+        return () => unsubscribe();
+    }, []);
 
 
     return (
         <div className="phantomate-page">
-            <SideBar toggleChatMode={toggleChatMode} isChatMode={isChatMode} me={me} />
+            <SideBar toggleChatMode={toggleChatMode} isChatMode={isChatMode} />
             <main className="main-content">
                 <div className={`bro-list ${isChatMode ? 'expanded' : ''}`}>
-                    <div className="bro-list-content">
-                        {sortedConvs.map(({ chatId: cId, profile }) => (
-                            <React.Fragment key={cId}>
-                                <button
-                                    className={`bro-button ${chatId === cId && isChatMode ? 'active' : ''}`}
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        if (isChatMode && chatId === cId) {
-                                            setIsChatMode(false);
-                                            setChatId(null);
-                                            setChatWith(null);
-                                        } else {
-                                            setUnreadChats(prev => {
-                                                const next = new Set(prev);
-                                                next.delete(cId);
-                                                return next;
-                                            });
-                                            setChatId(cId);
-                                            setChatWith(profile);
-                                            setIsChatMode(true);
-                                        }
-                                    }}
-                                >
-                                    {profile.username}
-                                    {unreadChats.has(cId) && <span className="unread-badge" />}
-                                </button>
-
-                                {isChatMode && chatId === cId && chatWith && (
-                                    <AnimatePresence mode="wait">
-                                        <motion.div
-                                            className="bro-chat-slot"
-                                            key={cId + '-panel'}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.3 }}
-                                            onClick={e => e.stopPropagation()}
-                                        >
-                                            <BroChat
-                                                chatId={chatId}
-                                                chatWith={chatWith}
-                                                me={me}
-                                                onBack={() => {
-                                                    setIsChatMode(false);
-                                                    setChatId(null);
-                                                    setChatWith(null);
-                                                }}
-                                            />
-                                        </motion.div>
-                                    </AnimatePresence>
-                                )}
-                            </React.Fragment>
-                        ))}
-
-                        {(!chatId || !chatWith) && (
+                    <div className="bro-list-content" onClick={toggleChatMode}>
+                        {activeBro !== null && (
                             <button
-                                className="ghost-button"
-                                onClick={e => {
+                                className="bro-button active"
+                                onClick={(e) => {
                                     e.stopPropagation();
-                                    toggleChatMode();
+                                    handleBroClick(activeBro);
                                 }}
                             >
-                                <img src={GhostImage} alt="New chat" className="ghost-image" />
+                                Bro {activeBro + 1}
                             </button>
                         )}
 
+                        {isChatMode && (
+                        <AnimatePresence mode="wait">
+                            {activeBro !== null && (
+                            <motion.div
+                                key={activeBro}
+                                className="bro-chat-slot"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <BroChat broIndex={activeBro} onBack={() => setIsChatMode(false)} />
+                            </motion.div>
+                            )}
+                        </AnimatePresence>
+                        )}
 
+                        {[...Array(6)].map((_, index) => {
+                            if (index === activeBro) return null;
+                            return (
+                                <button
+                                    key={index}
+                                    className="bro-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleBroClick(index);
+                                    }}
+                                >
+                                    Bro {index + 1}
+                                </button>
+                            );
+                        })}
+                        <button className="ghost-button">
+                            <img src={GhostImage} alt="Ghost Decoration" className="ghost-image" />
+                        </button>
                     </div>
                 </div>
 
                 <div className={`posts ${isChatMode ? 'compressed' : ''}`}>
                     <PostCreator />
-                    <div className="post">
-                        <div className="post-header">
-                            <img src={PostIcon1} alt="Ghost Avatar" className="post-avatar" />
-                            <h2 className="post-username">Umbrelith</h2>
-                        </div>
-                        <p className="post-text">"Where shadows connect..."</p>
-                        <img src={PostIm1} alt="Umbrelith" className="post-image" />
-                    </div>
-
-                    <div className="post">
-                        <div className="post-header">
-                            <img src={PostIcon2} alt="Ghost Avatar" className="post-avatar" />
-                            <h2 className="post-username">Nyxveil</h2>
-                        </div>
-                        <p className="post-text">"Not every connection needs..."</p>
-                        <img src={PostIm2} alt="Nyxveil" className="post-image" />
-                    </div>
+                    {/* <h1> Posts </h1> */}
+                    {posts.map(post => (
+                        <Post
+                            key={post.id}
+                            username={post}
+                            caption={post.caption}
+                            imageURL={post.imageURL}
+                            avatarURL={PostIcon1}
+                        />
+                    ))}
                 </div>
 
                 {showModal && (

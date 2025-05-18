@@ -22,6 +22,7 @@
     background-color: #0C0918;
     padding: 10px;
     color: #fff;
+    font-size: 16px;
     margin-bottom: 10px;
     outline: none;
     border: none;
@@ -32,7 +33,7 @@
 .post-description {
     height: 80px;
     resize: none;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .post-tools {
