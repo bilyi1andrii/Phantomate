@@ -183,3 +183,9 @@
         opacity: 1;
     }
 }
+
+
+.profile-image {
+    width: 50px;
+    height: auto;
+}

@@ -9,7 +9,7 @@ import ProfIcon from '../assets/profile-icon.png';
 import '../styles/Sidebar.css';
 import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 
-export default function Sidebar({ hideProfileButton = false, toggleChatMode, isChatMode }) {
+export default function Sidebar({ hideProfileButton = false, toggleChatMode, isChatMode, me }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const dropdownRef = useRef(null);
@@ -78,7 +78,7 @@ export default function Sidebar({ hideProfileButton = false, toggleChatMode, isC
                     <NavLink
                         to="/home"
                         onClick={handleChatClick}
-                        className={({ isActive }) => 
+                        className={({ isActive }) =>
                             `nav-link ${location.pathname === '/home' && isChatMode ? "nav-link-active" : ""}`
                         }
                     >
@@ -107,7 +107,7 @@ export default function Sidebar({ hideProfileButton = false, toggleChatMode, isC
             {!hideProfileButton && (
                 <div className="profile-button-container" ref={dropdownRef}>
                     <img
-                        src={ProfIcon}
+                        src={me?.profilePictureUrl || ProfIcon}
                         alt="Profile"
                         className="profile-image"
                         onClick={() => setDropdownOpen(!dropdownOpen)}

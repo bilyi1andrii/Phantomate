@@ -31,27 +31,27 @@ export default function ProfilePage() {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (u) => {
-          setUser(u);
-          if (u) {
-            const snap = await getDoc(doc(db, "users", u.uid));
-            if (snap.exists()) setProfile(snap.data());
-          }
+            setUser(u);
+            if (u) {
+                const snap = await getDoc(doc(db, "users", u.uid));
+                if (snap.exists()) setProfile(snap.data());
+            }
         });
         return unsubscribe;
-      }, []);
+    }, []);
 
-    
+
     useEffect(() => {
         if (!user) return;
 
         async function fetchPosts() {
 
             setPosts([
-            { id: '1', imageUrl: PostIm1, description: 'Why do Java developers wear glasses?\nBecause they don’t see sharp! 😎' },
-            { id: '2', imageUrl: PostIm2, description: 'How many programmers does it take to change a light bulb?\nNone, that’s a hardware problem! 💡🖥️' },
-            { id: '3', imageUrl: PostIm1, description: 'Post 3' },
-            { id: '4', imageUrl: PostIm2, description: 'Post 4' },
-            { id: '5', imageUrl: PostIm2, description: 'How many programmers does it take to change a light bulb?\nNone, that’s a hardware problem! 💡🖥️' },
+                { id: '1', imageUrl: PostIm1, description: 'Why do Java developers wear glasses?\nBecause they don’t see sharp! 😎' },
+                { id: '2', imageUrl: PostIm2, description: 'How many programmers does it take to change a light bulb?\nNone, that’s a hardware problem! 💡🖥️' },
+                { id: '3', imageUrl: PostIm1, description: 'Post 3' },
+                { id: '4', imageUrl: PostIm2, description: 'Post 4' },
+                { id: '5', imageUrl: PostIm2, description: 'How many programmers does it take to change a light bulb?\nNone, that’s a hardware problem! 💡🖥️' },
             ]);
         }
 
@@ -104,14 +104,14 @@ export default function ProfilePage() {
                             style={{ display: 'none' }}
                         />
                         <div className="header-right">
-                                <div className="name-stats">
-                                    <h1 className="username">{profile.username}</h1>
-                                    <div className="stats">
-                                        <span><strong>0</strong> profile-posts</span>
-                                        <span><strong>6</strong> friends</span>
-                                        <span><strong>12</strong> likes received</span>
-                                    </div>
+                            <div className="name-stats">
+                                <h1 className="username">{profile.username}</h1>
+                                <div className="stats">
+                                    <span><strong>0</strong> profile-posts</span>
+                                    <span><strong>6</strong> friends</span>
+                                    <span><strong>12</strong> likes received</span>
                                 </div>
+                            </div>
                             <div className="header-buttons">
                                 <button className="edit-button" onClick={() => setShowPopup(true)}>Edit profile</button>
                                 <button className="signout-button" onClick={() => setShowConfirmPopup(true)}>Sign out</button>
@@ -137,18 +137,18 @@ export default function ProfilePage() {
 
                     {activeTab === 'profile-posts' && (
                         <>
-                        {posts.length === 0 ? (
-                            <div className="empty-state">
-                            <p className="empty-title">Nothing to see yet</p>
-                            <div className="empty-card">
-                                <img src={EmptyGhost} alt="Ghost" className="empty-img" />
-                                <p className="empty-msg">Publish your imagination 💡</p>
-                                <button className="publish-button">Publish now</button>
-                            </div>
-                            </div>
-                        ) : (
-                            <PostsGrid posts={posts} username={profile.username} />
-                        )}
+                            {posts.length === 0 ? (
+                                <div className="empty-state">
+                                    <p className="empty-title">Nothing to see yet</p>
+                                    <div className="empty-card">
+                                        <img src={EmptyGhost} alt="Ghost" className="empty-img" />
+                                        <p className="empty-msg">Publish your imagination 💡</p>
+                                        <button className="publish-button">Publish now</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <PostsGrid posts={posts} username={profile.username} />
+                            )}
                         </>
                     )}
 
@@ -157,20 +157,20 @@ export default function ProfilePage() {
                             {profile && Object.keys(profile).length > 0 ? (
                                 <div className="profile-info-cards">
                                     {orderedFields.map(({ key, label }) => {
-                                    if (!(key in profile)) return null;
-                                    return (
-                                        <div key={key} className="info-card">
-                                        <div className="info-card-key">{label}</div>
-                                        <div className="info-card-value">{profile[key]}</div>
-                                        </div>
-                                    );
+                                        if (!(key in profile)) return null;
+                                        return (
+                                            <div key={key} className="info-card">
+                                                <div className="info-card-key">{label}</div>
+                                                <div className="info-card-value">{profile[key]}</div>
+                                            </div>
+                                        );
                                     })}
                                 </div>
-                                ) : (
+                            ) : (
                                 <div className="empty-state">
                                     <p>This user hasn't added any info yet.</p>
                                 </div>
-                                )}
+                            )}
                         </div>
                     )}
                 </div>

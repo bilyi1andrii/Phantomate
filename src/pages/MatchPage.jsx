@@ -18,9 +18,6 @@ export default function MatchPage() {
     const [bioVisible, setBioVisible] = useState(false);
     const [profileIndex, setProfileIndex] = useState(0);
     const [me, setMe] = useState(null);
-    // const [direction, setDirection] = useState(1);
-
-
 
     const controls = useAnimation();
 
@@ -41,11 +38,44 @@ export default function MatchPage() {
     const [matchesProfiles, setMatchesProfiles] = useState([]);
     const [deck, setDeck] = useState([]);
     const [conversationIds, setConversationIds] = useState(new Set());
+
+    const [swipesLoaded, setSwipesLoaded] = useState(false);
+    const [matchesLoaded, setMatchesLoaded] = useState(false);
+
+
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, user => {
-            setMe(user);
+        hasInitialDeck.current = false;
+    }, [me?.uid]);
+
+    useEffect(() => {
+        let unsubProfile = null;
+
+        const unsubscribeAuth = onAuthStateChanged(auth, user => {
+            if (user) {
+                unsubProfile = onSnapshot(
+                    doc(db, 'users', user.uid),
+                    snap => {
+                        if (snap.exists()) {
+                            setMe({ uid: snap.id, ...snap.data() });
+                        } else {
+                            setMe({
+                                uid: user.uid,
+                                username: user.displayName || 'You',
+                                photoURL: user.photoURL || ghostIcon
+                            });
+                        }
+                    },
+                    err => console.error(err)
+                );
+            } else {
+                setMe(null);
+            }
         });
-        return unsubscribe;
+
+        return () => {
+            unsubscribeAuth();
+            if (unsubProfile) unsubProfile();
+        };
     }, []);
 
     useEffect(() => {
@@ -68,21 +98,25 @@ export default function MatchPage() {
 
     useEffect(() => {
         if (!me) return;
+        setSwipesLoaded(false);
         const path = collection(db, "users", me.uid, "swipes");
         return onSnapshot(path, snap => {
             const likedIds = snap.docs
                 .filter(d => d.data().liked === true)
                 .map(d => d.id);
             setSwipedIds(new Set(likedIds));
+            setSwipesLoaded(true);
         });
     }, [me]);
 
     useEffect(() => {
         if (!me) return;
+        setMatchesLoaded(false);
         const path = collection(db, "users", me.uid, "matches");
         return onSnapshot(path, snap => {
             const ids = snap.docs.map(d => d.id);
             setMatchedIds(new Set(ids));
+            setMatchesLoaded(true);
 
             Promise.all(ids.map(uid => getDoc(doc(db, "users", uid))))
                 .then(docs => {
@@ -105,17 +139,30 @@ export default function MatchPage() {
 
 
     useEffect(() => {
-        if (!hasInitialDeck.current && profiles.length) {
-            const remaining = profiles.filter(p => !swipedIds.has(p.id) && !matchedIds.has(p.id));
-            setDeck(remaining);
-            hasInitialDeck.current = true;
-        }
-    }, [profiles, swipedIds]);
+        if (!me) return;
+        if (hasInitialDeck.current) return;
+        if (!swipesLoaded || !matchesLoaded) return;
+        if (profiles.length === 0) return;
+
+        const remaining = profiles.filter(p =>
+            !swipedIds.has(p.id) &&
+            !matchedIds.has(p.id)
+        );
+
+        setDeck(remaining);
+        setProfileIndex(0);
+        hasInitialDeck.current = true;
+    }, [
+        me,
+        profiles,
+        swipedIds,
+        matchedIds,
+        swipesLoaded,
+        matchesLoaded
+    ]);
 
     const currentProfile = deck[profileIndex] || null;
     const isDeckEmpty = profileIndex >= deck.length;
-    // console.log(deck.length)
-    // console.log(profileIndex)
 
 
     const handleNameClick = () => {
@@ -129,7 +176,6 @@ export default function MatchPage() {
         controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
         x.set(0);
     };
-    // console.log(deck);
 
     const saveSwipe = async (otherUid, isLike) => {
         if (!me) {
@@ -157,17 +203,13 @@ export default function MatchPage() {
         x.set(0);
         controls.set({ x: 0, rotate: 0, scale: 1, opacity: 1 });
     };
-
-    // console.log(profileIndex);
+    ;
 
     const handleDragEnd = async (event, info) => {
         const offsetX = info.offset.x;
-        // const velocityX = info.velocity.x;
 
         if (Math.abs(offsetX) > 100 && currentProfile) {
             const isLike = offsetX > 0;
-            // const direction = isLike ? 'like' : 'nope';
-            // const dir = isLike ? 1 : -1;
             const iconRef = isLike ? likeRef : nopeRef;
 
             const iconRect = iconRef.current.getBoundingClientRect();
@@ -189,7 +231,6 @@ export default function MatchPage() {
                 opacity: 0,
                 transition: { duration: 0.4, ease: 'easeInOut' },
             }).then(() => {
-                // only after the fly-off has finished:
                 controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
                 x.set(0);
                 setProfileIndex(i => i + 1);
@@ -210,16 +251,14 @@ export default function MatchPage() {
     const handleMessageClick = async (profile) => {
         if (!me) return;
         const otherUid = profile.id;
-        // 1) Build chatId
+
         const chatId = [me.uid, otherUid].sort().join("_");
 
-        // 2) Ensure chat doc exists
         await setDoc(doc(db, "chats", chatId), {
             participants: [me.uid, otherUid],
             createdAt: serverTimestamp()
         }, { merge: true });
 
-        // 3) Mirror in both users’ conversations
         await Promise.all([
             setDoc(doc(db, "users", me.uid, "conversations", otherUid), {
                 chatId, createdAt: serverTimestamp()
@@ -229,7 +268,6 @@ export default function MatchPage() {
             })
         ]);
 
-        // 4) Navigate into chat
         navigate("/home", {
             state: { openChat: true, chatId, chatWith: profile }
         });
@@ -237,7 +275,7 @@ export default function MatchPage() {
 
     return (
         <div className="match-page">
-            <SideBar />
+            <SideBar me={me} />
             <main className="match-main">
                 <div className="swipe-section">
                     <div className={`swipe-card ${isDeckEmpty ? 'empty' : ''}`} ref={cardRef}>
@@ -309,17 +347,17 @@ export default function MatchPage() {
                         {matchesProfiles
                             .filter(p => !conversationIds.has(p.id))
                             .map((p, i) => (
-                                    <div className="match-card" key={i}>
-                                        <div className="match-header">
-                                            <img src={p.profilePictureUrl || ProfileImage} alt={p.username} className="match-avatar" />
-                                            <div className="match-info"><h3>{p.username}</h3></div>
-                                        </div>
-                                        <p className="match-text">{p.joke}</p>
-                                        <button className="message-btn" onClick={() => handleMessageClick(p)}>
-                                            Message
-                                        </button>
+                                <div className="match-card" key={i}>
+                                    <div className="match-header">
+                                        <img src={p.profilePictureUrl || ProfileImage} alt={p.username} className="match-avatar" />
+                                        <div className="match-info"><h3>{p.username}</h3></div>
                                     </div>
-                                ))}
+                                    <p className="match-text">{p.joke}</p>
+                                    <button className="message-btn" onClick={() => handleMessageClick(p)}>
+                                        Message
+                                    </button>
+                                </div>
+                            ))}
                     </div>
                 </div>
             </main>

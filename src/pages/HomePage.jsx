@@ -155,7 +155,7 @@ export default function PhantomatePage() {
 
     return (
         <div className="phantomate-page">
-            <SideBar toggleChatMode={toggleChatMode} isChatMode={isChatMode} />
+            <SideBar toggleChatMode={toggleChatMode} isChatMode={isChatMode} me={me} />
             <main className="main-content">
                 <div className={`bro-list ${isChatMode ? 'expanded' : ''}`}>
                     <div className="bro-list-content">
