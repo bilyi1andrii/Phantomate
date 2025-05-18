@@ -6,3 +6,22 @@ html, body {
   background: linear-gradient(#0C0918, #2b163f);
   /* overflow-x: hidden; */
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: black #0C0918;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0C0918;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: black;
+  border-radius: 6px;
+}

@@ -271,11 +271,12 @@
     background-color: #0C0918;
     border: 1px solid #625b8c;
     border-radius: 15px;
-    padding: 30px 30px;
+    padding: 30px;
     width: 200px;
     text-align: center;
     flex-shrink: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     transition: box-shadow 0.3s, background-color 0.3s;
 }
 

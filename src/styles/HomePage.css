@@ -93,6 +93,7 @@
     height: calc(100vh - 111px);
     scrollbar-width: none;
     -ms-overflow-style: none;
+    align-items: center;
 }
 
 .posts::-webkit-scrollbar {
