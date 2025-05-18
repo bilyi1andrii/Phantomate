@@ -27,7 +27,7 @@ export default function PhantomatePage() {
     const [me, setMe] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [isChatMode, setIsChatMode] = useState(false);
-    const [activeBro, setActiveBro] = useState(null);
+    // const [activeBro, setActiveBro] = useState(null);
 
     const [chatId, setChatId] = useState(null);
     const [chatWith, setChatWith] = useState(null);
@@ -71,15 +71,18 @@ export default function PhantomatePage() {
         return unsubConv;
     }, [me]);
 
-    const handleBroClick = (broIndex) => {
-        if (isChatMode && activeBro === broIndex) {
-            setIsChatMode(false);
-            setActiveBro(null);
-        } else {
-            setActiveBro(broIndex);
-            setIsChatMode(true);
-        }
-    };
+    // const handleBroClick = () => {
+    //     e.stopPropagation();
+    //     if (isChatMode && chatId === cId) {
+    //         setIsChatMode(false);
+    //         setChatId(null);
+    //         setChatWith(null);
+    //     } else {
+    //         setChatId(cId);
+    //         setChatWith(profile);
+    //         setIsChatMode(true);
+    //     }
+    // };
 
     useEffect(() => {
         if (location.state?.showSignupForm) {

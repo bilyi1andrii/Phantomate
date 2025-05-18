@@ -1,15 +1,50 @@
 import { useState, useRef, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "../config/firebase";
+import { auth, db, storage } from "../config/firebase";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import '../styles/Chat.css';
 import ghostIcon from '../assets/profile-icon.png';
 import bopIcon from '../assets/phantom-profile.png';
+import { button } from 'framer-motion/client';
 
 export default function BroChat({ chatId, chatWith, onBack }) {
     const [messages, setMessages] = useState([
     ]);
     const [input, setInput] = useState('');
     const messagesEndRef = useRef(null);
+
+    const [file, setFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+
+    const handleFileChange = (e) => {
+        const f = e.target.files[0];
+        if (f) setFile(f);
+    };
+
+    const handleImageSend = async () => {
+        if (!file) return;
+        setUploading(true);
+
+        // 1) Create a storage ref under chats/{chatId}/images/
+        const imgRef = storageRef(storage, `chats/${chatId}/images/${Date.now()}_${file.name}`);
+
+        // 2) Upload the file
+        await uploadBytes(imgRef, file);
+
+        // 3) Get its download URL
+        const url = await getDownloadURL(imgRef);
+
+        // 4) Write a Firestore message with imageURL
+        await addDoc(collection(db, "chats", chatId, "messages"), {
+            imageURL: url,
+            senderId: auth.currentUser.uid,
+            timestamp: serverTimestamp()
+        });
+
+        // 5) Reset
+        setFile(null);
+        setUploading(false);
+    };
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -66,7 +101,10 @@ export default function BroChat({ chatId, chatWith, onBack }) {
                                 alt={isYou ? 'you' : 'bop'}
                                 className="chat-icon"
                             />
-                            <div className="chat-text">{msg.text}</div>
+                            {msg.imageURL
+                                ? <img src={msg.imageURL} alt="attachment" className="chat-image" />
+                                : <div className="chat-text">{msg.text}</div>
+                            }
                         </div>
                     );
                 })}
@@ -76,7 +114,7 @@ export default function BroChat({ chatId, chatWith, onBack }) {
             <div className="chat-input-bar">
                 <label className="image-upload">
                     Img
-                    <input type="file" accept="image/*" />
+                    <input type="file" accept="image/*" onChange={handleFileChange} />
                 </label>
                 <input
                     type="text"
@@ -85,7 +123,13 @@ export default function BroChat({ chatId, chatWith, onBack }) {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyPress}
                 />
-                <button onClick={handleSend}>Send</button>
+                {file
+                    ? <button onClick={handleImageSend} disabled={uploading}>
+                        {uploading ? "Uploading…" : "Send Image"}
+                    </button>
+
+                    : <button onClick={handleSend}>Send</button>
+                }
             </div>
         </div>
     );
