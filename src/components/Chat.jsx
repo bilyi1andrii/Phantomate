@@ -7,7 +7,7 @@ import ghostIcon from '../assets/profile-icon.png';
 import bopIcon from '../assets/phantom-profile.png';
 import { button } from 'framer-motion/client';
 
-export default function BroChat({ chatId, chatWith, onBack }) {
+export default function BroChat({ chatId, chatWith, me, onBack }) {
     const [messages, setMessages] = useState([
     ]);
     const [input, setInput] = useState('');
@@ -16,34 +16,48 @@ export default function BroChat({ chatId, chatWith, onBack }) {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [imageCaption, setImageCaption] = useState('');
+
+    const fileInputRef = useRef(null);
+
     const handleFileChange = (e) => {
         const f = e.target.files[0];
-        if (f) setFile(f);
+        if (f) {
+            setFile(f);
+            setImageCaption('');
+            setShowImageModal(true);
+        }
     };
+
+    const handleCancelImage = () => {
+        setShowImageModal(false);
+        setFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    }
 
     const handleImageSend = async () => {
         if (!file) return;
         setUploading(true);
 
-        // 1) Create a storage ref under chats/{chatId}/images/
         const imgRef = storageRef(storage, `chats/${chatId}/images/${Date.now()}_${file.name}`);
 
-        // 2) Upload the file
         await uploadBytes(imgRef, file);
 
-        // 3) Get its download URL
         const url = await getDownloadURL(imgRef);
 
-        // 4) Write a Firestore message with imageURL
         await addDoc(collection(db, "chats", chatId, "messages"), {
             imageURL: url,
+            caption: imageCaption.trim() || null,
             senderId: auth.currentUser.uid,
             timestamp: serverTimestamp()
         });
 
-        // 5) Reset
         setFile(null);
         setUploading(false);
+        setShowImageModal(false);
+        setImageCaption('');
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     useEffect(() => {
@@ -90,19 +104,61 @@ export default function BroChat({ chatId, chatWith, onBack }) {
     };
 
     return (
+
         <div className="bro-chat themed-chat">
+            {showImageModal && (
+                <div className="modal-overlay" onClick={handleCancelImage}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <h3>Add a caption</h3>
+                        <img
+                            src={URL.createObjectURL(file)}
+                            alt="preview"
+                            className="modal-image-preview"
+                        />
+                        <textarea
+                            placeholder="Write a caption..."
+                            value={imageCaption}
+                            onChange={e => setImageCaption(e.target.value)}
+                            rows={3}
+                        />
+                        <div className="modal-buttons">
+                            <button onClick={handleCancelImage} disabled={uploading}>
+                                Cancel
+                            </button>
+                            <button onClick={handleImageSend} disabled={uploading}>
+                                {uploading ? "Uploading…" : "Send Image"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="chat-messages">
                 {messages.map((msg, index) => {
                     const isYou = msg.senderId === auth.currentUser.uid;
                     return (
                         <div key={index} className={`chat-bubble ${isYou ? 'you' : 'bop'}`}>
                             <img
-                                src={isYou ? ghostIcon : bopIcon}
-                                alt={isYou ? 'you' : 'bop'}
+                                src={
+                                    isYou
+                                        ? me?.profilePictureUrl || ghostIcon
+                                        : chatWith?.profilePictureUrl || bopIcon
+                                }
+                                alt={isYou ? 'You' : chatWith?.username || 'Friend'}
                                 className="chat-icon"
                             />
                             {msg.imageURL
-                                ? <img src={msg.imageURL} alt="attachment" className="chat-image" />
+                                ? (
+                                    <div className="chat-image-container">
+                                        <img
+                                            src={msg.imageURL}
+                                            alt="attachment"
+                                            className="chat-image"
+                                        />
+                                        {msg.caption && (
+                                            <div className="chat-caption">{msg.caption}</div>
+                                        )}
+                                    </div>
+                                )
                                 : <div className="chat-text">{msg.text}</div>
                             }
                         </div>
@@ -113,23 +169,23 @@ export default function BroChat({ chatId, chatWith, onBack }) {
 
             <div className="chat-input-bar">
                 <label className="image-upload">
-                    Img
-                    <input type="file" accept="image/*" onChange={handleFileChange} />
+                    IMG
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                    />
                 </label>
+
                 <input
                     type="text"
                     placeholder="Type your message..."
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={e => setInput(e.target.value)}
                     onKeyDown={handleKeyPress}
                 />
-                {file
-                    ? <button onClick={handleImageSend} disabled={uploading}>
-                        {uploading ? "Uploading…" : "Send Image"}
-                    </button>
-
-                    : <button onClick={handleSend}>Send</button>
-                }
+                <button onClick={handleSend}>Send</button>
             </div>
         </div>
     );

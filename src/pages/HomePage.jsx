@@ -10,6 +10,9 @@ import PostIm2 from '../assets/post2.png';
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import ghostIcon from '../assets/profile-icon.png';
+import bopIcon from '../assets/phantom-profile.png';
+import { onAuthStateChanged } from 'firebase/auth';
 
 import BroChat from '../components/Chat';
 import { auth, db } from '../config/firebase';
@@ -20,6 +23,7 @@ import {
     onSnapshot,
     query,
     orderBy,
+    limit
 } from 'firebase/firestore';
 
 export default function PhantomatePage() {
@@ -27,32 +31,86 @@ export default function PhantomatePage() {
     const [me, setMe] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [isChatMode, setIsChatMode] = useState(false);
-    // const [activeBro, setActiveBro] = useState(null);
 
     const [chatId, setChatId] = useState(null);
     const [chatWith, setChatWith] = useState(null);
     const [conversations, setConversations] = useState([]);
 
+    const [unreadChats, setUnreadChats] = useState(new Set());
+
+    useEffect(() => {
+        if (!conversations.length) return;
+
+        const unsubscribers = conversations.map(({ chatId: convId }) => {
+            const latestMsgQuery = query(
+                collection(db, "chats", convId, "messages"),
+                orderBy("timestamp", "desc"),
+                limit(1)
+            );
+
+            return onSnapshot(latestMsgQuery, snap => {
+                if (snap.empty) return;
+                const msg = snap.docs[0].data();
+
+                if (
+                    msg.senderId !== auth.currentUser.uid &&
+                    convId !== chatId
+                ) {
+                    setUnreadChats(prev => {
+                        const next = new Set(prev);
+                        next.add(convId);
+                        return next;
+                    });
+                }
+            });
+        });
+
+        return () => unsubscribers.forEach(unsub => unsub());
+    }, [conversations, chatId]);
+
     const toggleChatMode = () => {
         setIsChatMode(prev => !prev);
     };
     useEffect(() => {
-        // 1) get current user
-        const unsubAuth = auth.onAuthStateChanged(u => {
-            setMe(u);
+        let unsubProfile = null;
+
+        const unsubscribeAuth = onAuthStateChanged(auth, user => {
+            if (user) {
+                unsubProfile = onSnapshot(
+                    doc(db, 'users', user.uid),
+                    snap => {
+                        if (snap.exists()) {
+                            setMe({ uid: snap.id, ...snap.data() });
+                        } else {
+                            setMe({
+                                uid: user.uid,
+                                username: user.displayName || 'You',
+                                photoURL: user.photoURL || ghostIcon
+                            });
+                        }
+                    },
+                    err => console.error(err)
+                );
+            } else {
+                setMe(null);
+            }
         });
-        return unsubAuth;
+
+        return () => {
+            unsubscribeAuth();
+            if (unsubProfile) unsubProfile();
+        };
     }, []);
+
+
 
     useEffect(() => {
         if (!me) return;
 
-        // 2) listen for conversation docs under users/{me.uid}/conversations
         const convCol = collection(db, 'users', me.uid, 'conversations');
         const unsubConv = onSnapshot(
             query(convCol, orderBy('createdAt', 'desc')),
             async snap => {
-                // for each conversation doc, pull the other user's profile
                 const convs = await Promise.all(
                     snap.docs.map(async d => {
                         const otherUid = d.id;
@@ -71,18 +129,6 @@ export default function PhantomatePage() {
         return unsubConv;
     }, [me]);
 
-    // const handleBroClick = () => {
-    //     e.stopPropagation();
-    //     if (isChatMode && chatId === cId) {
-    //         setIsChatMode(false);
-    //         setChatId(null);
-    //         setChatWith(null);
-    //     } else {
-    //         setChatId(cId);
-    //         setChatWith(profile);
-    //         setIsChatMode(true);
-    //     }
-    // };
 
     useEffect(() => {
         if (location.state?.showSignupForm) {
@@ -95,14 +141,12 @@ export default function PhantomatePage() {
             setChatId(location.state.chatId);
             setChatWith(location.state.chatWith);
             setIsChatMode(true);
-            // clear history so state doesn’t persist on reload
             window.history.replaceState({}, "");
         }
     }, [location.state]);
 
     const sortedConvs = (() => {
         if (!isChatMode || !chatId) return conversations;
-        // pull out the active one
         const active = conversations.find(c => c.chatId === chatId);
         const others = conversations.filter(c => c.chatId !== chatId);
         return active ? [active, ...others] : conversations;
@@ -126,6 +170,11 @@ export default function PhantomatePage() {
                                             setChatId(null);
                                             setChatWith(null);
                                         } else {
+                                            setUnreadChats(prev => {
+                                                const next = new Set(prev);
+                                                next.delete(cId);
+                                                return next;
+                                            });
                                             setChatId(cId);
                                             setChatWith(profile);
                                             setIsChatMode(true);
@@ -133,9 +182,9 @@ export default function PhantomatePage() {
                                     }}
                                 >
                                     {profile.username}
+                                    {unreadChats.has(cId) && <span className="unread-badge" />}
                                 </button>
 
-                                {/* right under the active button, open the panel */}
                                 {isChatMode && chatId === cId && chatWith && (
                                     <AnimatePresence mode="wait">
                                         <motion.div
@@ -150,6 +199,7 @@ export default function PhantomatePage() {
                                             <BroChat
                                                 chatId={chatId}
                                                 chatWith={chatWith}
+                                                me={me}
                                                 onBack={() => {
                                                     setIsChatMode(false);
                                                     setChatId(null);
