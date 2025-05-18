@@ -27,6 +27,7 @@ import {
 } from 'firebase/firestore';
 
 export default function PhantomatePage() {
+    // throw new Error("Test error in HomePage");
     const location = useLocation();
     const [me, setMe] = useState(null);
     const [showModal, setShowModal] = useState(false);

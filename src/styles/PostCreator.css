@@ -2,8 +2,8 @@
     background-color: #0C0918;
     border-radius: 15px;
     padding: 20px;
-    margin: 10px auto 20px auto; /* центрування по горизонталі */
-    width: 92%; /* як у .post */
+    margin: 10px auto 20px auto;
+    width: 92%;
     color: #cccbe5;
     display: flex;
     flex-direction: column;

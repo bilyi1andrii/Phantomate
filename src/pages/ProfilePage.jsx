@@ -81,7 +81,6 @@ export default function ProfilePage() {
 
         console.log('Profile picture updated!');
     }
-
     return (
         <div className="profile-page">
             <SideBar hideProfileButton={true} />

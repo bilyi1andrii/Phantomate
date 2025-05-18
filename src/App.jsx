@@ -10,18 +10,24 @@ import MatchPage from './pages/MatchPage'
 import TestPage from './pages/TestPage'
 import ProfilePage from './pages/ProfilePage'
 
+import NotFound from './pages/NotFound';
+import ErrorBoundary from './components/ErrorBoundary';
+
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<StartPage />} />
-        <Route path="/signin" element={<SigninPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/match" element={<MatchPage />} />
-        <Route path="/personality" element={<TestPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<StartPage />} />
+          <Route path="/signin" element={<SigninPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/match" element={<MatchPage />} />
+          <Route path="/personality" element={<TestPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
     </Router>
   );
 }

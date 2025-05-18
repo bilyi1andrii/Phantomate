@@ -14,10 +14,14 @@ import ArrowLike from '../assets/matchlike.gif';
 import ArrowNope from '../assets/matchnope.gif';
 
 
+
 export default function MatchPage() {
+
+
     const [bioVisible, setBioVisible] = useState(false);
     const [profileIndex, setProfileIndex] = useState(0);
     const [me, setMe] = useState(null);
+
 
     const controls = useAnimation();
 
