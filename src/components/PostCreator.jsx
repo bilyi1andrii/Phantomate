@@ -50,9 +50,9 @@ export default function PostCreator({ me }) {
 
     return (
         <form className="post-creator" onSubmit={handlePost}>
-            <input
+            <textarea
                 className="post-description"
-                placeholder="Description…"
+                placeholder="Description. Start an interesting conversation or share something wholesome."
                 value={text}
                 onChange={e => setText(e.target.value)}
             />

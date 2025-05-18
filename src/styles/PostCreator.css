@@ -2,6 +2,7 @@
     background-color: #0C0918;
     border-radius: 15px;
     padding: 20px;
+    padding-top: 0px;
     margin: 10px auto 20px auto;
     width: 92%;
     color: #cccbe5;
@@ -13,29 +14,31 @@
     box-sizing: border-box;
 }
 
-
-
 .post-creator:hover {
     box-shadow: 0 0 20px rgb(141, 92, 255);
 }
 
 .post-description {
-    width: 90%;
-    background-color: #0C0918;
-    padding: 10px;
-    color: #fff;
-    margin-bottom: 10px;
-    outline: none;
-    border: none;
-    border-radius: 10px;
-    margin: 0 auto;
+  width: 90%;
+  background-color: #0C0918;
+  padding: 10px;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  resize: none;
+  height: 80px;
+  overflow-wrap: break-word;
+  white-space: normal;
+  margin: 20px auto 10px auto;
 }
 
-.post-description {
-    height: 80px;
-    resize: none;
-    font-size: 12px;
+.post-description:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
 }
+
 
 .post-tools {
     display: flex;
@@ -52,7 +55,7 @@
     gap: 10px;
 }
 
-.image-upload-post, .gif-upload-post {
+.image-upload-post {
     background-color: #262250;
     border-radius: 20px;
     padding: 8px 15px;
@@ -62,7 +65,7 @@
     transition: background-color 0.3s ease;
 }
 
-.image-upload-post:hover, .gif-upload-post:hover {
+.image-upload-post:hover {
     background-color: #aaa8cc;
 }
 
@@ -71,9 +74,9 @@
     color: black;
     border: none;
     border-radius: 20px;
-    padding: 8px 14px;
+    padding: 7px 10px;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 11px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
