@@ -6,7 +6,7 @@ import MatchIcon from '../assets/match-icon.png';
 import ChatIcon from '../assets/chat-icon.png';
 import TestIcon from '../assets/test-icon.png';
 import ProfIcon from '../assets/phantom-profile.png';;
-import '../styles/Sidebar.css';
+import '../styles/SideBar.css';
 import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 
 export default function Sidebar({ hideProfileButton = false, toggleChatMode, isChatMode, me }) {
