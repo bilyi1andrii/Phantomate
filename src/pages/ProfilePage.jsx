@@ -10,6 +10,7 @@ import EmptyGhost from '../assets/cuteghost.png';
 import SignUpForm from '../components/SignUpForm';
 import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 import PostsGrid from '../components/PostsGrid.jsx';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('profile-posts');
@@ -20,6 +21,7 @@ export default function ProfilePage() {
     const [posts, setPosts] = useState([]);
     const [friendsCount, setFriendsCount] = useState(0);
     const [postsCount, setPostsCount] = useState(0);
+    const navigate = useNavigate();
 
     const orderedFields = [
         { key: 'username', label: 'Name' },
@@ -165,7 +167,7 @@ export default function ProfilePage() {
                                     <div className="empty-card">
                                         <img src={EmptyGhost} alt="Ghost" className="empty-img" />
                                         <p className="empty-msg">Publish your imagination 💡</p>
-                                        <button className="publish-button">Publish now</button>
+                                        <button className="publish-button" onClick={() => navigate('/home')}>Publish now</button>
                                     </div>
                                 </div>
                             ) : (

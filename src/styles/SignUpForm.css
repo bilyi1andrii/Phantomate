@@ -142,4 +142,7 @@
     font-weight: 500;
     color: #f7efff;
     padding: 5px;
+    border: 1px solid #FFFF;
+    border-radius: 10px;
+    opacity: 0.6;
 }
