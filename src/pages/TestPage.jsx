@@ -1,71 +1,164 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { auth, db } from '../config/firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import axios from 'axios';
 import '../styles/TestPage.css';
 import SideBar from '../components/SideBar.jsx';
 import BooImage from '../assets/boo.png';
 
 export default function PersonalityTestPage() {
-  const questions = [
-    "Do you enjoy sneaking around silently, observing others without being noticed?",
-    "Do you often feel like you're in the wrong place... or even the wrong century?",
-    "Do you find comfort in the night and feel most energized when the world is quiet?"
-  ];
+    const [questions, setQuestions] = useState([]);
+    const [visibleCount, setVisibleCount] = useState(0);
+    const [answers, setAnswers] = useState([]);
+    const [score, setScore] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [me, setMe] = useState(null);
 
-  const [visibleQuestionsCount, setVisibleQuestionsCount] = useState(0);
+    useEffect(() => {
+        let unsubProfile = null;
 
-  const handleTakeTest = () => {
-    if (visibleQuestionsCount === 0) {
-      setVisibleQuestionsCount(1);
-    }
-  };
+        const unsubscribeAuth = onAuthStateChanged(auth, user => {
+            if (user) {
+                unsubProfile = onSnapshot(
+                    doc(db, 'users', user.uid),
+                    snap => {
+                        if (snap.exists()) {
+                            setMe({ uid: snap.id, ...snap.data() });
+                        } else {
+                            setMe({
+                                uid: user.uid,
+                                username: user.displayName || 'You',
+                                photoURL: user.photoURL || ghostIcon
+                            });
+                        }
+                    },
+                    err => console.error(err)
+                );
+            } else {
+                setMe(null);
+            }
+        });
 
-  const handleAnswer = (index) => {
-    if (index === visibleQuestionsCount - 1 && visibleQuestionsCount < questions.length) {
-      setVisibleQuestionsCount(visibleQuestionsCount + 1);
-    }
-  };
+        return () => {
+            unsubscribeAuth();
+            if (unsubProfile) unsubProfile();
+        };
+    }, []);
 
-  return (
-    <div className="personality-page">
-      <SideBar />
-      <main className="personality-content">
-        <div className="intro-section">
-          <div className="intro-text">
-            <h1>16 personality test.<br />Discover who you are.</h1>
-            <p>
-              The 16 Personality Test is more than just a label — it’s a mirror to your spirit.
-              It's not about putting you in a box. It's about getting out—the one you’ve carried inside all along.
-              Answer a few questions. Uncover your type. Begin understanding yourself — and the people you're drawn to —
-              on a whole new level.
-            </p>
-            <button className="take-test-btn" onClick={handleTakeTest}>
-              {visibleQuestionsCount === 0 ? 'Take test' : 'Continue'}
-            </button>
-          </div>
-          <img src={BooImage} alt="Ghost Boo" className="boo-image" />
-        </div>
+    const API_KEY = 'Lm4tyKEPUMSUq3xSVgUnHpbUMiotZckb8XzwawTL';
 
-        <div className="questionnaire">
-          {questions.slice(0, visibleQuestionsCount).map((question, i) => (
-            <div className="question-block" key={i}>
-              <p className="question-text">{question}</p>
-              <div className="options">
-                <span>No</span>
-                {[...Array(5)].map((_, j) => (
-                  <label key={j} className="option-circle">
-                    <input
-                      type="radio"
-                      name={`q${i}`}
-                      onChange={() => handleAnswer(i)}
-                    />
-                    <span className="checkmark" />
-                  </label>
+    const handleStartQuiz = async () => {
+        if (questions.length === 0) {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await axios.get('https://quizapi.io/api/v1/questions', {
+                    params: {
+                        apiKey: API_KEY,
+                        limit: 5,
+                        category: 'React',
+                        difficulty: 'Easy'
+                    }
+                });
+                setQuestions(res.data);
+            } catch (err) {
+                console.error('QuizAPI error', err);
+                setError('Couldn’t load questions');
+            } finally {
+                setLoading(false);
+            }
+        }
+        setVisibleCount(1);
+    };
+
+
+    const handleAnswer = (qId, answerKey) => {
+        if (answers.some(a => a.id === qId)) return;
+        const newAnswers = [...answers, { id: qId, answerKey }];
+        setAnswers(newAnswers);
+
+        if (visibleCount < questions.length) {
+            setVisibleCount(vc => vc + 1);
+        } else {
+            const pts = newAnswers.reduce((sum, { id, answerKey }) => {
+                const q = questions.find(x => x.id === id);
+                return sum + (q?.correct_answers?.[`${answerKey}_correct`] === 'true');
+            }, 0);
+            setScore(`${pts} out of ${questions.length}`);
+        }
+    };
+
+    const handleRetake = () => {
+        setQuestions([]);
+        setAnswers([]);
+        setScore(null);
+        setVisibleCount(0);
+        setError(null);
+    };
+
+    return (
+        <div className="personality-page">
+            <SideBar me={me} />
+
+            <main className="personality-content">
+                <div className="intro-section">
+                    <div className="intro-text">
+                        <h1>JavaScript Quiz ⚡️</h1>
+                        <p>Test your JS knowledge one question at a time!</p>
+                        {!score && visibleCount === 0 && (
+                            <button className="take-test-btn" onClick={handleStartQuiz}>
+                                Start Quiz
+                            </button>
+                        )}
+
+                        {!score && visibleCount > 0 && visibleCount < questions.length && (
+                            <button className="take-test-btn" onClick={() => setVisibleCount(vc => vc + 1)}>
+                                Next
+                            </button>
+                        )}
+
+                        {score && (
+                            <button className="take-test-btn" onClick={handleRetake}>
+                                Retake Quiz
+                            </button>
+                        )}
+                    </div>
+                    <img src={BooImage} alt="Ghost Boo" className="boo-image" />
+                </div>
+
+                {loading && <p>Loading questions…</p>}
+                {error && <p className="error">{error}</p>}
+
+                {!loading && !error && questions.slice(0, visibleCount).map((q, i) => (
+                    <div className="question-block" key={q.id}>
+                        <p className="question-text">{q.question}</p>
+                        <div className="options">
+                            {Object.entries(q.answers).map(([key, text]) =>
+                                text && (
+                                    <label key={key} className="option-circle">
+                                        <input
+                                            type="radio"
+                                            name={`q${i}`}
+                                            onChange={() => handleAnswer(q.id, key)}
+                                        />
+                                        <span className="checkmark" />
+                                        {text}
+                                    </label>
+                                )
+                            )}
+                        </div>
+                    </div>
                 ))}
-                <span>Yes</span>
-              </div>
-            </div>
-          ))}
+
+                {score && (
+                    <div className="result-section">
+                        <h2>Your score:</h2>
+                        <p>{score}</p>
+                    </div>
+                )}
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 }
