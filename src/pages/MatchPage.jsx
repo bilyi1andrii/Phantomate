@@ -106,7 +106,7 @@ export default function MatchPage() {
 
     useEffect(() => {
         if (!hasInitialDeck.current && profiles.length) {
-            const remaining = profiles.filter(p => !swipedIds.has(p.id));
+            const remaining = profiles.filter(p => !swipedIds.has(p.id) && !matchedIds.has(p.id));
             setDeck(remaining);
             hasInitialDeck.current = true;
         }
@@ -123,7 +123,7 @@ export default function MatchPage() {
     };
 
     const handleRefreshClick = () => {
-        const remaining = profiles.filter(p => !swipedIds.has(p.id));
+        const remaining = profiles.filter(p => !swipedIds.has(p.id) && !matchedIds.has(p.id));
         setDeck(shuffleArray(remaining));
         setProfileIndex(0);
         controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
