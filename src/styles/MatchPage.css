@@ -25,15 +25,16 @@
 }
 
 .swipe-card {
-    margin-top: 100px;
+    margin-top: 80px;
+    margin-left: 20px;
     background-color: #0C0918;
     border: 1px solid #625b8c;
     border-radius: 20px;
     padding: 0px 60px;
     text-align: center;
-    height: 600px;
-    width: 100%;
-    max-width: 900px;
+    height:550px;
+    width: 90%;
+    max-width: 1000px;
     position: relative;
     overflow: hidden;
     padding-top: 100px;
@@ -86,6 +87,7 @@
     -moz-user-select: none;
     outline: none;
     transition: transform 0.3s ease, background-color 0.3s ease;
+    margin-bottom: 20px;
 }
 
 .phantom-name:hover {
@@ -94,17 +96,28 @@
 }
 
 .phantom-bio {
-    font-size: 13px;
+    font-size: 12px;
     color: #cccbe5;
-    margin-bottom: 10px;
+    margin: 10px;
     position: absolute;
     left: 0;
     right: 0;
-    padding-top: 10px;
-    width: 50%;
+    padding: 10px;
+    width: 90%;
     margin: 0 auto;
-    margin-top: 40px;
+    margin-top: 30px;
     transform: translateY(-20px);
+    border-radius: 10px;
+    border: 1px solid #9d8bff;
+    opacity: 0.8;
+}
+
+.phantom-bio > div {
+  margin-bottom: 8px;
+}
+
+.phantom-bio > div:last-child {
+  margin-bottom: 0;
 }
 
 .bio-location {
@@ -154,19 +167,90 @@
 .matched-section {
     padding-top: 70px;
     text-align: center;
-    margin-left: 6%;
-    margin-right: 8%;
+    margin-left: 2%;
+    margin-right: 2%;
+    margin-top: 2%;
+    padding: 10px;
+    text-align: center;
+    flex-shrink: 0;
+    overflow-y: auto;
+    transition: box-shadow 0.3s, background-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.match-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.match-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #5c4ed2;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.match-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;   
+}
+
+.match-details {
+    width: 100%;
+    text-align: left;
+    font-size: 12px;
+    color: #cccbe5;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.match-details > div {
+    margin-bottom: 8px;
+}
+
+.match-details > div:last-child {
+    margin-bottom: 0;
+}
+
+.message-btn {
+    margin-top: 30px;
+    padding: 15px 20px;
+    background-color: #0C0918;
+    border: 1px solid #7663f3;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    width: 50%;
+}
+
+.message-btn:hover {
+    background-color: #41377d;
+    box-shadow: 0 0 10px 3px #9d8bff;
+    transform: scale(1.01);
 }
 
 .match-title {
     font-size: 28px;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
+    color:#857eaf
 }
 
 .match-subtitle {
-    font-size: 14px;
+    font-size: 11px;
     color: #cccbe5;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    opacity: 0.6;
 }
 
 .match-cards {
@@ -176,7 +260,11 @@
     flex-wrap: wrap;
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 10px;
+    padding: 30px 0;
+    height: 350px;
+    border-radius: 10px;
+    background-color: #000000;
+    width: 100%;
 }
 
 .match-card {
@@ -187,6 +275,13 @@
     width: 200px;
     text-align: center;
     flex-shrink: 0;
+    overflow-y: auto;
+    transition: box-shadow 0.3s, background-color 0.3s;
+}
+
+.match-card:hover {
+    box-shadow: 0 0 15px #b097ff;
+    background-color: #1A1333;
 }
 
 .match-header {
@@ -219,23 +314,6 @@
     margin: 30px 0 20px;
 }
 
-.message-btn {
-    margin-top: 20px;
-    padding: 15px 20px;
-    background-color: #0C0918;
-    border: 1px solid #7663f3;
-    border-radius: 20px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.message-btn:hover {
-    background-color: #9d8bff;
-    transform: scale(1.05);
-}
-
 .swipe-card.empty {
     border: 1px solid #ccc;
     display: flex;
@@ -255,6 +333,7 @@
     width: 80px;
     height: auto;
 }
+
 
 
 

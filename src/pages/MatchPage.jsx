@@ -325,7 +325,27 @@ export default function MatchPage() {
 
                                         {bioVisible && (
                                             <div className="phantom-bio">
-                                                {currentProfile.joke.split('\n').map((l, i) => <span key={i}>{l}<br /></span>)}
+                                                <div><strong>Age: </strong>{currentProfile.age}</div>
+
+                                                <div>
+                                                    <strong>Favorite pizza: </strong>
+                                                    {currentProfile.pizza.split('\n').map((line, i) => (
+                                                    <span key={`pizza-${i}`}>
+                                                        {line}
+                                                        <br />
+                                                    </span>
+                                                    ))}
+                                                </div>
+
+                                                <div>
+                                                    <strong>Best Joke: </strong>
+                                                    {currentProfile.joke.split('\n').map((line, i) => (
+                                                    <span key={`joke-${i}`}>
+                                                        {line}
+                                                        <br />
+                                                    </span>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
                                     </>
@@ -343,7 +363,15 @@ export default function MatchPage() {
                 </div>
 
                 <div className="matched-section">
-                    <h2 className="match-title">Matched phantoms</h2>
+                    {matchesProfiles.length > 0 && (
+                        <>
+                            <h2 className="match-title">Matched phantoms</h2>
+                            <p className="match-subtitle">
+                                These are spirits you've connected with from the beyond.<br />
+                                Now's your chance to reach out through the veil — send a message and let the haunting begin.
+                            </p>
+                        </>
+                    )}
                     <div className="match-cards">
                         {matchesProfiles
                             .filter(p => !conversationIds.has(p.id))
@@ -353,7 +381,22 @@ export default function MatchPage() {
                                         <img src={p.profilePictureUrl || ProfileImage} alt={p.username} className="match-avatar" />
                                         <div className="match-info"><h3>{p.username}</h3></div>
                                     </div>
-                                    <p className="match-text">{p.joke}</p>
+                                    <div className="match-details">
+                                        <div><strong>Age: </strong>{p.age}</div>
+                                        <div>
+                                        <strong>Favorite pizza: </strong>
+                                        {p.pizza.split('\n').map((line, i) => (
+                                            <span key={`pizza-${i}`}>{line}</span>
+                                        ))}
+                                        </div>
+                                        <div>
+                                        <strong>Best Joke: </strong>
+                                        {p.joke.split('\n').map((line, i) => (
+                                            <span key={`joke-${i}`}>{line}</span>
+                                        ))}
+                                        </div>
+                                    </div>
+
                                     <button className="message-btn" onClick={() => handleMessageClick(p)}>
                                         Message
                                     </button>

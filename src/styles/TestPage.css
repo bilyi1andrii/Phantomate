@@ -7,7 +7,7 @@
 .personality-content {
     flex: 1;
     padding: 40px 60px;
-    margin-top: 130px;
+    margin-top: 110px;
     overflow-y: auto;
     animation: fadeIn 0.5s ease-in-out;
 }
@@ -27,13 +27,13 @@
 }
 
 .intro-text h1 {
-    font-size: 38px;
-    margin-bottom: 60px;
+    font-size: 35px;
+    margin-bottom: 40px;
 }
 
 .intro-text p {
     color: #cccbe5;
-    font-size: 16px;
+    font-size: 12px;
     margin-bottom: 40px;
 }
 
@@ -43,7 +43,7 @@
     border: 1px solid #7663f3;
     border-radius: 25px;
     color: white;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
 }
 
@@ -96,13 +96,19 @@
     background-color: #0C0918;
     border: 1px solid #625b8c;
     border-radius: 15px;
-    padding: 20px 30px;
-    padding-top: 5px;
+    padding: 15px 25px;
+    padding-top: 10px;
+}
+
+.question-block:hover {
+    background-color: #1a1633;
+    box-shadow: 0 0 10px 2px #8a82c7;
+    border-color: #8a82c7;
 }
 
 .question-text {
     margin-bottom: 20px;
-    font-size: 17px;
+    font-size: 12px;
 }
 
 .options {
@@ -123,8 +129,8 @@
 }
 
 .checkmark {
-    height: 24px;
-    width: 24px;
+    height: 22px;
+    width: 22px;
     border: 1.5px solid #cccbe5;
     border-radius: 30%;
     display: inline-block;
@@ -150,25 +156,25 @@
 }
 
 .option-circle:nth-child(2) .checkmark {
-    transform: scale(1.4);
+    transform: scale(1.1);
     cursor: pointer;
 
 }
 .option-circle:nth-child(3) .checkmark {
-    transform: scale(1.1);
+    transform: scale(0.8);
     cursor: pointer;
 }
 .option-circle:nth-child(4) .checkmark {
-    transform: scale(0.9);
+    transform: scale(0.6);
     cursor: pointer;
 }
 
 .option-circle:nth-child(5) .checkmark {
-    transform: scale(1.1);
+    transform: scale(0.8);
     cursor: pointer;
 }
 .option-circle:nth-child(6) .checkmark {
-    transform: scale(1.4);
+    transform: scale(1.1);
     cursor: pointer;
 }
 
@@ -179,12 +185,12 @@
 
 .options > span {
   position: relative;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 500;
   color: #ffffff;
   user-select: none;
   border: 1px solid #7663f3;
   border-radius: 10px;
-  padding: 5px;
+  padding: 10px;
   opacity: 0.7;
 }

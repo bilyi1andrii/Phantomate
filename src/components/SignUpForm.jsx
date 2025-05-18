@@ -104,6 +104,7 @@ export default function SignUpForm({ onClose }) {
                     <h1 className="signup_header">Tell Us About Yourself</h1>
 
                     <div className="input-container">
+                        <label className="input-label">Name</label>
                         <input
                             type="text"
                             value={name}
@@ -115,6 +116,7 @@ export default function SignUpForm({ onClose }) {
                     </div>
 
                     <div className="input-container">
+                        <label className="input-label">Age</label>
                         <input
                             type="text"
                             value={age}
@@ -137,6 +139,7 @@ export default function SignUpForm({ onClose }) {
 
 
                     <div className="input-container">
+                        <label className="input-label">Favourite Pizza</label>
                         <input
                             type="text"
                             value={pizza}
@@ -148,6 +151,7 @@ export default function SignUpForm({ onClose }) {
                     </div>
 
                     <div className="input-container">
+                        <label className="input-label">Your Best Joke</label>
                         <textarea
                             value={joke}
                             onChange={(e) => setJoke(e.target.value)}

@@ -7,8 +7,8 @@
 
 .main-content {
     display: flex;
-    margin-top: 100px;
-    width: 70%;
+    margin-top: 80px;
+    width: 71%;
     padding: 20px;
     min-height: 0;
     justify-content: center;
@@ -29,7 +29,7 @@
     border: 1px solid #625b8c;
     border-radius: 15px;
     padding-right: 10px;
-    height: calc(100vh - 130px);
+    height: calc(100vh - 111px);
     background-color: #0C0918;
     position: relative;
     transition: width 0.5s ease-in-out;
@@ -67,11 +67,12 @@
     border-radius: 10px;
     padding: 8px 12px;
     align-self: center;
-    width: 90%;
+    width: 93%;
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
-    height: 40px;
+    height: 30px;
+    font-size: 10px;
 }
 
 .bro-button:hover {
@@ -89,7 +90,7 @@
     gap: 20px;
     padding-left: 20px;
     overflow-y: auto;
-    height: calc(100vh - 130px);
+    height: calc(100vh - 111px);
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -118,20 +119,20 @@
 }
 
 .post-avatar {
-    width: 15%;
+    width: 13%;
     border-radius: 20px;
     border: 0.5px #625b8c solid;
     pointer-events: none;
 }
 
 .post-username {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .post-text {
     margin-bottom: 15px;
     padding: 3% 5%;
-    font-size: 16px;
+    font-size: 12px;
     color: #cccbe5;
 }
 
@@ -222,7 +223,7 @@
 .unread-badge {
   position: absolute;
   top: 6px;
-  right: 8px;
+  right: 5px;
   width: 8px;
   height: 8px;
   background: #e33;

@@ -5,7 +5,7 @@ import HomeIcon from '../assets/home-icon.png';
 import MatchIcon from '../assets/match-icon.png';
 import ChatIcon from '../assets/chat-icon.png';
 import TestIcon from '../assets/test-icon.png';
-import ProfIcon from '../assets/profile-icon.png';
+import ProfIcon from '../assets/phantom-profile.png';;
 import '../styles/Sidebar.css';
 import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 

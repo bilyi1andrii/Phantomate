@@ -5,7 +5,7 @@ import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import '../styles/ProfilePage.css';
 import SideBar from '../components/SideBar.jsx';
-import GhostAvatar from '../assets/profile-icon.png';
+import GhostAvatar from '../assets/phantom-profile.png';
 import EmptyGhost from '../assets/cuteghost.png';
 import SignUpForm from '../components/SignUpForm';
 import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
@@ -24,7 +24,7 @@ export default function ProfilePage() {
     const orderedFields = [
         { key: 'username', label: 'Name' },
         { key: 'age', label: 'Age' },
-        { key: 'pizza', label: 'Favorite Pizza' },
+        { key: 'pizza', label: 'Favourite Pizza' },
         { key: 'joke', label: 'Best joke' },
     ];
 
@@ -105,11 +105,10 @@ export default function ProfilePage() {
                         />
                         <div className="header-right">
                             <div className="name-stats">
-                                <h1 className="username">{profile.username}</h1>
+                                <h1 className="username">{profile.username || "User"}</h1>
                                 <div className="stats">
                                     <span><strong>0</strong> profile-posts</span>
                                     <span><strong>6</strong> friends</span>
-                                    <span><strong>12</strong> likes received</span>
                                 </div>
                             </div>
                             <div className="header-buttons">

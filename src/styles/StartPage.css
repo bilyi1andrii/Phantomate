@@ -42,7 +42,7 @@
     }
     
     .start_page_text {
-    font-size: max(1rem, 1.3vw);
+    font-size: max(0.8rem, 1.0vw);
     font-weight: 300;
     color: #DBD1FE;
     line-height: 1.6;
@@ -53,8 +53,8 @@
     background: linear-gradient(90deg, #6E5DAC 0%, #5640A3 100%);
     border: none;
     border-radius: 30px;
-    padding: 18px 60px;
-    font-size: 18px;
+    padding: 11px 60px;
+    font-size: 16px;
     font-weight: 500;
     color: #FFFFFF;
     cursor: pointer;
@@ -73,7 +73,7 @@
     justify-content: center;
     align-items: center;
     gap: 15px;
-    font-size: 14px;
+    font-size: 11px;
     color: #aaa8cc;
     margin-top: auto;
     padding-bottom: 10px;
@@ -94,7 +94,7 @@
     color: #aaa8cc;
     text-decoration: none;
     transition: color 0.3s ease;
-    font-size: 14px;
+    font-size: 11px;
     }
     
     .footer_start .social-media a:hover {

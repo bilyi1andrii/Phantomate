@@ -109,7 +109,6 @@ export default function BroChat({ chatId, chatWith, me, onBack }) {
             {showImageModal && (
                 <div className="modal-overlay" onClick={handleCancelImage}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <h3>Add a caption</h3>
                         <img
                             src={URL.createObjectURL(file)}
                             alt="preview"
