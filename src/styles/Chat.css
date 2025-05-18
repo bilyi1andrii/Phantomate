@@ -67,9 +67,10 @@
 }
 
 .chat-icon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 20px;
+    border: 1px solid #868cd7;
     object-fit: cover
 }
 
@@ -285,4 +286,25 @@
 .modal-buttons button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.chat-message-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-timestamp {
+    font-size: 0.6em;
+    color: #888;
+    margin-top: 4px;
+}
+
+.chat-timestamp.you {
+    text-align: right;
+    margin-right: 45px;
+}
+
+.chat-timestamp.bop {
+    text-align: left;
+    margin-left: 46px;
 }

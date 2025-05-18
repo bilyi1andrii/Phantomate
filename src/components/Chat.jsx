@@ -103,12 +103,18 @@ export default function BroChat({ chatId, chatWith, me, onBack }) {
         }
     };
 
-    return (
+    const formatTimestamp = (timestamp) => {
+        if (!timestamp || !timestamp.toDate) return '';
+        const date = timestamp.toDate();
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    };
 
+    return (
         <div className="bro-chat themed-chat">
             {showImageModal && (
                 <div className="modal-overlay" onClick={handleCancelImage}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
+
                         <img
                             src={URL.createObjectURL(file)}
                             alt="preview"
@@ -135,31 +141,37 @@ export default function BroChat({ chatId, chatWith, me, onBack }) {
                 {messages.map((msg, index) => {
                     const isYou = msg.senderId === auth.currentUser.uid;
                     return (
-                        <div key={index} className={`chat-bubble ${isYou ? 'you' : 'bop'}`}>
-                            <img
-                                src={
-                                    isYou
-                                        ? me?.profilePictureUrl || ghostIcon
-                                        : chatWith?.profilePictureUrl || bopIcon
-                                }
-                                alt={isYou ? 'You' : chatWith?.username || 'Friend'}
-                                className="chat-icon"
-                            />
-                            {msg.imageURL
-                                ? (
-                                    <div className="chat-image-container">
-                                        <img
-                                            src={msg.imageURL}
-                                            alt="attachment"
-                                            className="chat-image"
-                                        />
-                                        {msg.caption && (
-                                            <div className="chat-caption">{msg.caption}</div>
-                                        )}
-                                    </div>
-                                )
-                                : <div className="chat-text">{msg.text}</div>
-                            }
+                        <div key={index} className={`chat-message-wrapper ${isYou ? 'you' : 'bop'}`}>
+                            <div className={`chat-bubble ${isYou ? 'you' : 'bop'}`}>
+                                <img
+                                    src={
+                                        isYou
+                                            ? me?.profilePictureUrl || ghostIcon
+                                            : chatWith?.profilePictureUrl || bopIcon
+                                    }
+                                    alt={isYou ? 'You' : chatWith?.username || 'Friend'}
+                                    className="chat-icon"
+                                />
+                                <div className="chat-content">
+                                    {msg.imageURL ? (
+                                        <div className="chat-image-container">
+                                            <img
+                                                src={msg.imageURL}
+                                                alt="attachment"
+                                                className="chat-image"
+                                            />
+                                            {msg.caption && (
+                                                <div className="chat-caption">{msg.caption}</div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="chat-text">{msg.text}</div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className={`chat-timestamp ${isYou ? 'you' : 'bop'}`}>
+                                {formatTimestamp(msg.timestamp)}
+                            </div>
                         </div>
                     );
                 })}
