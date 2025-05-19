@@ -7,7 +7,7 @@ import ChatIcon from '../assets/chat-icon.png';
 import TestIcon from '../assets/test-icon.png';
 import ProfIcon from '../assets/phantom-profile.png';;
 import '../styles/SideBar.css';
-import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
+import ConfirmSignOutPopup from './ConfirmSignOutPopup.jsx';
 
 export default function Sidebar({ hideProfileButton = false, toggleChatMode, isChatMode, me }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);

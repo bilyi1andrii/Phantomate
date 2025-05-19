@@ -16,7 +16,7 @@
     align-items: center;
     width: 85vh;
     background-image:
-    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
         url('../assets/form-signup.gif');
     height: 70vh;
     max-width: 700vh;
@@ -41,6 +41,7 @@
         transform: scale(0.9);
         opacity: 0;
     }
+
     100% {
         transform: scale(1);
         opacity: 1;

@@ -6,20 +6,20 @@
     margin-top: 10px;
     margin-left: 20px;
     border-right: 0.5px solid #625b8c;
-    }
+}
 
 .logo {
     display: flex;
     align-items: center;
     margin-bottom: 40px;
-    }
+}
 
 .logo-icon {
-    width:15%;
+    width: 15%;
     border-radius: 10px;
     border: 1px solid #625b8c;
     pointer-events: none;
-    }
+}
 
 .logo-text {
     padding-left: 15px;
@@ -27,16 +27,16 @@
     font-weight: bold;
     width: 80%;
 
-    }
+}
 
 @media (max-width: 1008px) {
-.logo-text {
+    .logo-text {
         font-size: 15px;
     }
 }
 
 @media (max-width: 700px) {
-.logo-text {
+    .logo-text {
         font-size: 12px;
     }
 }
@@ -73,7 +73,8 @@
     transition: color 0.3s ease;
 }
 
-    .nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
     color: #6e68e1;
 }
 
@@ -139,7 +140,7 @@
     padding: 10px 0;
     z-index: 9999;
     color: white;
-    background-image: 
+    background-image:
         linear-gradient(rgba(48, 26, 189, 0.1), rgba(0, 0, 0, 0.1)),
         url('../assets/loadghost.gif');
     background-position: center;
@@ -153,7 +154,7 @@
 }
 
 .profile-dropdown .dropdown-item {
-        color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
 }
 
 
@@ -178,6 +179,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }

@@ -18,8 +18,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .bro-list {
@@ -185,6 +192,7 @@
     0% {
         backdrop-filter: blur(0px);
     }
+
     100% {
         backdrop-filter: blur(5px);
     }
@@ -220,15 +228,15 @@
 }
 
 .bro-button {
-  position: relative;
+    position: relative;
 }
 
 .unread-badge {
-  position: absolute;
-  top: 6px;
-  right: 5px;
-  width: 8px;
-  height: 8px;
-  background: #e33;
-  border-radius: 50%;
+    position: absolute;
+    top: 6px;
+    right: 5px;
+    width: 8px;
+    height: 8px;
+    background: #e33;
+    border-radius: 50%;
 }

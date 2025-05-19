@@ -14,22 +14,22 @@ import NotFound from './pages/NotFound';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
-  return (
-    <Router>
-      <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<StartPage />} />
-          <Route path="/signin" element={<SigninPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/match" element={<MatchPage />} />
-          <Route path="/personality" element={<TestPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ErrorBoundary>
-    </Router>
-  );
+    return (
+        <Router>
+            <ErrorBoundary>
+                <Routes>
+                    <Route path="/" element={<StartPage />} />
+                    <Route path="/signin" element={<SigninPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/match" element={<MatchPage />} />
+                    <Route path="/personality" element={<TestPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </ErrorBoundary>
+        </Router>
+    );
 }
 
 export default App;
