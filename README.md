@@ -42,6 +42,8 @@ npm install framer-motion
 npm install react-router-dom
 ```
 
+### Issues
+You can experience troubles running this script on Windows. This could be due to system rules.
 
 ## Development Notes
 Built with React + Vite
@@ -50,5 +52,7 @@ Firebase SDK v9+ modular style
 
 ## Contributing
 Oksana Kotilarchuk - https://github.com/Ok-ss
+
 Bilyi Andrii - https://github.com/bilyi1andrii
+
 Iryna Kyrylova - https://github.com/hhafiya
