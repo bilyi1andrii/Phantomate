@@ -36,17 +36,19 @@ git checkout firebase
 </code>
 
 ### Install dependencies:
+```{shell}
+npm install
 npm install framer-motion
 npm install react-router-dom
+```
 
 
 ## Development Notes
 Built with React + Vite
 Firebase SDK v9+ modular style
 
-## Screenshots
 
 ## Contributing
 Oksana Kotilarchuk - https://github.com/Ok-ss
 Bilyi Andrii - https://github.com/bilyi1andrii
-Iryna Kyrylova - 
+Iryna Kyrylova - https://github.com/hhafiya
