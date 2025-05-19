@@ -10,18 +10,18 @@ Phantomate is a web application that allows people to connect with each other. I
 - tests linked to users (the API will be changed later)
 
 ## Structure
-Phantomate/
-├── public/                 # Static assets and index.html
-├── src/
-│   ├── components/         # Reusable UI components
-│   ├── pages/              # App pages (HomePage, MatchPage, LoginPage, etc.)
-│   ├── services/           # Firebase interaction logic
-│   ├── App.tsx             # Main app component
-│   └── main.tsx            # App entry point
-├── .firebaserc             # Firebase project settings
-├── firebase.json           # Firebase hosting config
-├── package.json            # Project dependencies
-└── README.md
+Phantomate/ <br>
+├── public/                 # Static assets and index.html  <br>
+├── src/  <br>
+│   ├── components/         # Reusable UI components  <br>
+│   ├── pages/              # App pages (HomePage, MatchPage, LoginPage, etc.)  <br>
+│   ├── services/           # Firebase interaction logic  <br>
+│   ├── App.tsx             # Main app component  <br>
+│   └── main.tsx            # App entry point  <br>
+├── .firebaserc             # Firebase project settings  <br>
+├── firebase.json           # Firebase hosting config  <br>
+├── package.json            # Project dependencies  <br>
+└── README.md  <br>
 
 ## Setup & Instalation
 ### Prerequisites:
