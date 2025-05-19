@@ -155,7 +155,7 @@
     flex-shrink: 0;
 }
 
-.option-circle input[type="radio"]:checked + .checkmark {
+.option-circle input[type="radio"]:checked+.checkmark {
     background-color: #7663f3;
     border-color: #7663f3;
     animation: pulseScale 0.3s ease;
@@ -165,9 +165,11 @@
     0% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(0.7);
     }
+
     100% {
         transform: scale(1);
     }
@@ -200,9 +202,9 @@
 }
 
 .result-gif {
-  display: block;
-  margin: 20px auto 0;
-  width: 150px;
-  border-radius: 10px;
-  user-select: none;
+    display: block;
+    margin: 20px auto 0;
+    width: 150px;
+    border-radius: 10px;
+    user-select: none;
 }

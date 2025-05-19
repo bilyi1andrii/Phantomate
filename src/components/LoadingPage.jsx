@@ -4,9 +4,9 @@ import loadingGif from '../assets/loadghost.gif';
 
 export default function LoadingPage() {
 
-  return (
-    <div className="loading-page">
-      <img src={loadingGif} alt="Loading" className="loading-background" />
-    </div>
-  );
+    return (
+        <div className="loading-page">
+            <img src={loadingGif} alt="Loading" className="loading-background" />
+        </div>
+    );
 }

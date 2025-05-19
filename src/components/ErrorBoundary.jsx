@@ -15,15 +15,15 @@ class ErrorBoundary extends React.Component {
         console.error("Error caught in Error Boundary:", error, errorInfo);
     }
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="errorBoundaryContainer">
-          <h1 className="errorBoundaryTitle">Something went wrong.</h1>
-          <p className="errorBoundaryText">Please refresh the page or try again later.</p>
-        </div>
-      );
-    }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="errorBoundaryContainer">
+                    <h1 className="errorBoundaryTitle">Something went wrong.</h1>
+                    <p className="errorBoundaryText">Please refresh the page or try again later.</p>
+                </div>
+            );
+        }
 
         return this.props.children;
     }

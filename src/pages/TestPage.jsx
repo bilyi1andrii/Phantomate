@@ -17,6 +17,7 @@ export default function PersonalityTestPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [me, setMe] = useState(null);
+    const bottomRef = useRef(null);
 
     useEffect(() => {
         let unsubProfile = null;
@@ -48,6 +49,12 @@ export default function PersonalityTestPage() {
             if (unsubProfile) unsubProfile();
         };
     }, []);
+
+    useEffect(() => {
+        if (visibleCount > 0) {
+            bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [visibleCount]);
 
     const API_KEY = 'Lm4tyKEPUMSUq3xSVgUnHpbUMiotZckb8XzwawTL';
 
@@ -157,6 +164,8 @@ export default function PersonalityTestPage() {
                         </div>
                     </div>
                 ))}
+
+                <div ref={bottomRef} />
 
                 {score && (
                     <div className="result-section">

@@ -4,7 +4,6 @@ import SignInImage from '../assets/signin_image.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-// Authentication service
 import { auth } from "../config/firebase"
 import { signInWithEmailAndPassword } from "firebase/auth"
 
