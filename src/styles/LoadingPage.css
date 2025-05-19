@@ -14,45 +14,10 @@
 }
 
 .loading-background {
-  width: 100vw;
-  height: 100vw;
+  width: 80vw;
+  height: 80vw;
   object-fit: contain;
-  opacity: 0.3;
+  opacity: 0.4;
   user-select: none;
   filter: hue-rotate(320deg);
 }
-
-.loading-text {
-  position: fixed;
-  top: 140px;
-  right: 10px;
-  font-size: 1.1rem;
-  color: white;
-  font-family: sans-serif;
-  user-select: none;
-  margin: 0;
-  z-index: 10;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  opacity: 0.7;
-  text-shadow:
-    0 0 6px #7f00ff,
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
-}
-
-.loading-word {
-  width: 60px;  
-  text-align: left;
-}
-
-.loading-dots {
-  width: 30px;
-  text-align: left;
-  min-width: 20px;
-}
-

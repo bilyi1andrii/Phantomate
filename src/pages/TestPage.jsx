@@ -6,6 +6,7 @@ import axios from 'axios';
 import '../styles/TestPage.css';
 import SideBar from '../components/SideBar.jsx';
 import BooImage from '../assets/boo.png';
+import LoadingPage from '../components/LoadingPage';
 
 export default function PersonalityTestPage() {
     const [questions, setQuestions] = useState([]);
@@ -97,6 +98,10 @@ export default function PersonalityTestPage() {
         setVisibleCount(0);
         setError(null);
     };
+
+    if (!me) {
+        return <LoadingPage />;
+    }
 
     return (
         <div className="personality-page">

@@ -11,6 +11,7 @@ import SignUpForm from '../components/SignUpForm';
 import ConfirmSignOutPopup from '../components/ConfirmSignOutPopup.jsx';
 import PostsGrid from '../components/PostsGrid.jsx';
 import { useNavigate } from 'react-router-dom';
+import LoadingPage from '../components/LoadingPage';
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('profile-posts');
@@ -22,6 +23,7 @@ export default function ProfilePage() {
     const [friendsCount, setFriendsCount] = useState(0);
     const [postsCount, setPostsCount] = useState(0);
     const navigate = useNavigate();
+    const [loadingPosts, setLoadingPosts] = useState(true);
 
     const orderedFields = [
         { key: 'username', label: 'Name' },
@@ -85,8 +87,10 @@ export default function ProfilePage() {
         if (!user) {
             setPosts([]);
             setFriendsCount(0);
+            setLoadingPosts(false);
             return;
         }
+        setLoadingPosts(true);
 
         (async () => {
 
@@ -95,6 +99,7 @@ export default function ProfilePage() {
             );
             setFriendsCount(friendsSnap.size);
         })();
+        setLoadingPosts(false);
     }, [user]);
 
     async function handleFileChange(e) {
@@ -119,6 +124,9 @@ export default function ProfilePage() {
         setProfile(prev => ({ ...prev, profilePictureUrl: url }));
 
         console.log('Profile picture updated!');
+    }
+    if (!user || loadingPosts) {
+        return <LoadingPage />;
     }
     return (
         <div className="profile-page">
