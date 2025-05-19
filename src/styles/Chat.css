@@ -308,3 +308,10 @@
     text-align: left;
     margin-left: 46px;
 }
+
+.empty-chat {
+  text-align: center;
+  color: #666;
+  margin: 2rem 0;
+  font-style: italic;
+}

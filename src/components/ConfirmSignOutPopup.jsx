@@ -1,12 +1,20 @@
 import '../styles/ConfirmSignOutPopup.css';
 import { useNavigate } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
 export default function ConfirmSignOutPopup({ onCancel }) {
     const navigate = useNavigate();
 
-    const handleConfirm = (e) => {
-        console.log('User signed out');
-        navigate('/signin');
+    const handleConfirm = async (e) => {
+        e.preventDefault();
+        try {
+            await signOut(auth);
+            console.log('User signed out');
+            navigate('/signin');
+        } catch (error) {
+            console.error('Sign-out error:', error);
+        }
     };
 
     return (

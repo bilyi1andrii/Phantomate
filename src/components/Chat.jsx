@@ -5,11 +5,9 @@ import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage
 import '../styles/Chat.css';
 import ghostIcon from '../assets/profile-icon.png';
 import bopIcon from '../assets/phantom-profile.png';
-import { button } from 'framer-motion/client';
 
 export default function BroChat({ chatId, chatWith, me, onBack }) {
-    const [messages, setMessages] = useState([
-    ]);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const messagesEndRef = useRef(null);
 
@@ -27,6 +25,16 @@ export default function BroChat({ chatId, chatWith, me, onBack }) {
             setFile(f);
             setImageCaption('');
             setShowImageModal(true);
+        }
+    };
+
+    const scrollToBottom = (behavior = 'smooth') => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({
+                behavior,
+                block: 'end',
+                inline: 'nearest',
+            });
         }
     };
 
@@ -61,13 +69,7 @@ export default function BroChat({ chatId, chatWith, me, onBack }) {
     };
 
     useEffect(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end',
-                inline: 'nearest',
-            });
-        }
+        scrollToBottom();
     }, [messages]);
 
     useEffect(() => {
@@ -138,43 +140,54 @@ export default function BroChat({ chatId, chatWith, me, onBack }) {
                 </div>
             )}
             <div className="chat-messages">
-                {messages.map((msg, index) => {
-                    const isYou = msg.senderId === auth.currentUser.uid;
-                    return (
-                        <div key={index} className={`chat-message-wrapper ${isYou ? 'you' : 'bop'}`}>
-                            <div className={`chat-bubble ${isYou ? 'you' : 'bop'}`}>
-                                <img
-                                    src={
-                                        isYou
-                                            ? me?.profilePictureUrl || ghostIcon
-                                            : chatWith?.profilePictureUrl || bopIcon
-                                    }
-                                    alt={isYou ? 'You' : chatWith?.username || 'Friend'}
-                                    className="chat-icon"
-                                />
-                                <div className="chat-content">
-                                    {msg.imageURL ? (
-                                        <div className="chat-image-container">
-                                            <img
-                                                src={msg.imageURL}
-                                                alt="attachment"
-                                                className="chat-image"
-                                            />
-                                            {msg.caption && (
-                                                <div className="chat-caption">{msg.caption}</div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div className="chat-text">{msg.text}</div>
-                                    )}
+
+                {messages.length === 0 ? (
+                    <div className="empty-chat">
+                        <p>
+                            You haven’t chatted with{' '}
+                            <strong>{chatWith?.username || 'this user'}</strong> yet.
+                        </p>
+                        <p>Start a conversation below!</p>
+                    </div>
+                ) : (
+                    messages.map((msg, index) => {
+                        const isYou = msg.senderId === auth.currentUser.uid;
+                        return (
+                            <div key={index} className={`chat-message-wrapper ${isYou ? 'you' : 'bop'}`}>
+                                <div className={`chat-bubble ${isYou ? 'you' : 'bop'}`}>
+                                    <img
+                                        src={
+                                            isYou
+                                                ? me?.profilePictureUrl || ghostIcon
+                                                : chatWith?.profilePictureUrl || bopIcon
+                                        }
+                                        alt={isYou ? 'You' : chatWith?.username || 'Friend'}
+                                        className="chat-icon"
+                                    />
+                                    <div className="chat-content">
+                                        {msg.imageURL ? (
+                                            <div className="chat-image-container">
+                                                <img
+                                                    src={msg.imageURL}
+                                                    alt="attachment"
+                                                    className="chat-image"
+                                                    onLoad={() => scrollToBottom()}
+                                                />
+                                                {msg.caption && (
+                                                    <div className="chat-caption">{msg.caption}</div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="chat-text">{msg.text}</div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className={`chat-timestamp ${isYou ? 'you' : 'bop'}`}>
+                                    {formatTimestamp(msg.timestamp)}
                                 </div>
                             </div>
-                            <div className={`chat-timestamp ${isYou ? 'you' : 'bop'}`}>
-                                {formatTimestamp(msg.timestamp)}
-                            </div>
-                        </div>
-                    );
-                })}
+                        );
+                    }))}
                 <div ref={messagesEndRef} />
             </div>
 

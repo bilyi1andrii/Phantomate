@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db, storage, auth } from "../config/firebase"
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { updateDoc, doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { updateDoc, doc, onSnapshot, collection, query, where, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import '../styles/ProfilePage.css';
 import SideBar from '../components/SideBar.jsx';
@@ -30,17 +30,30 @@ export default function ProfilePage() {
         { key: 'joke', label: 'Best joke' },
     ];
 
+    useEffect(() => {
+        const unsubscribeAuth = onAuthStateChanged(auth, u => {
+            setUser(u);
+        });
+        return () => unsubscribeAuth();
+    }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (u) => {
-            setUser(u);
-            if (u) {
-                const snap = await getDoc(doc(db, "users", u.uid));
-                if (snap.exists()) setProfile(snap.data());
+        if (!user) {
+            setProfile({});
+            return;
+        }
+
+        const userDocRef = doc(db, "users", user.uid);
+        const unsubscribeProfile = onSnapshot(userDocRef, snap => {
+            if (snap.exists()) {
+                setProfile(snap.data());
+            } else {
+                setProfile({});
             }
         });
-        return unsubscribe;
-    }, []);
+
+        return () => unsubscribeProfile();
+    }, [user]);
 
 
     useEffect(() => {

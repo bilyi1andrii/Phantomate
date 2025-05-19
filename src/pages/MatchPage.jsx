@@ -334,20 +334,20 @@ export default function MatchPage() {
                                                 <div>
                                                     <strong>Favorite pizza: </strong>
                                                     {currentProfile.pizza.split('\n').map((line, i) => (
-                                                    <span key={`pizza-${i}`}>
-                                                        {line}
-                                                        <br />
-                                                    </span>
+                                                        <span key={`pizza-${i}`}>
+                                                            {line}
+                                                            <br />
+                                                        </span>
                                                     ))}
                                                 </div>
 
                                                 <div>
                                                     <strong>Best Joke: </strong>
                                                     {currentProfile.joke.split('\n').map((line, i) => (
-                                                    <span key={`joke-${i}`}>
-                                                        {line}
-                                                        <br />
-                                                    </span>
+                                                        <span key={`joke-${i}`}>
+                                                            {line}
+                                                            <br />
+                                                        </span>
                                                     ))}
                                                 </div>
                                             </div>
@@ -388,16 +388,16 @@ export default function MatchPage() {
                                     <div className="match-details">
                                         <div><strong>Age: </strong>{p.age}</div>
                                         <div>
-                                        <strong>Favorite pizza: </strong>
-                                        {p.pizza.split('\n').map((line, i) => (
-                                            <span key={`pizza-${i}`}>{line}</span>
-                                        ))}
+                                            <strong>Favorite pizza: </strong>
+                                            {p.pizza.split('\n').map((line, i) => (
+                                                <span key={`pizza-${i}`}>{line}</span>
+                                            ))}
                                         </div>
                                         <div>
-                                        <strong>Best Joke: </strong>
-                                        {p.joke.split('\n').map((line, i) => (
-                                            <span key={`joke-${i}`}>{line}</span>
-                                        ))}
+                                            <strong>Best Joke: </strong>
+                                            {p.joke.split('\n').map((line, i) => (
+                                                <span key={`joke-${i}`}>{line}</span>
+                                            ))}
                                         </div>
                                     </div>
 

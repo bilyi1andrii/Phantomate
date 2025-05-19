@@ -166,7 +166,7 @@ export default function SignUpForm({ onClose }) {
                         <div className="error-message">{error}</div>
                     )}
 
-                    <button type="submit" className="button_signin">Continue</button>
+                    <button type="submit" className="button_signin">Submit</button>
                 </form>
             </div>
         </div>
