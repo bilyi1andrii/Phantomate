@@ -22,9 +22,9 @@ import {
     orderBy,
     limit
 } from 'firebase/firestore';
+import LoadingPage from '../components/LoadingPage';
 
 export default function PhantomatePage() {
-    // throw new Error("Test error in HomePage");
     const location = useLocation();
     const [me, setMe] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -36,6 +36,9 @@ export default function PhantomatePage() {
 
     const [unreadChats, setUnreadChats] = useState(new Set());
     const [posts, setPosts] = useState([]);
+
+    const [loadingPosts, setLoadingPosts] = useState(true);
+    const [loadingChats, setLoadingChats] = useState(true);
 
     useEffect(() => {
         const q = query(
@@ -71,6 +74,7 @@ export default function PhantomatePage() {
                 );
 
                 setPosts(postsWithAuthors);
+                setLoadingPosts(false);
             })();
         });
 
@@ -161,6 +165,7 @@ export default function PhantomatePage() {
                     })
                 );
                 setConversations(convs);
+                setLoadingChats(false);
             }
         );
 
@@ -189,6 +194,10 @@ export default function PhantomatePage() {
         const others = conversations.filter(c => c.chatId !== chatId);
         return active ? [active, ...others] : conversations;
     })();
+
+    if (!me || loadingPosts || loadingChats) {
+        return <LoadingPage />;
+    }
 
 
     return (

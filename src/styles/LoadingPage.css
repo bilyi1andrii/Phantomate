@@ -1,0 +1,58 @@
+.loading-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  gap: 0;
+  background-color: #000;
+}
+
+.loading-background {
+  width: 100vw;
+  height: 100vw;
+  object-fit: contain;
+  opacity: 0.3;
+  user-select: none;
+  filter: hue-rotate(320deg);
+}
+
+.loading-text {
+  position: fixed;
+  top: 140px;
+  right: 10px;
+  font-size: 1.1rem;
+  color: white;
+  font-family: sans-serif;
+  user-select: none;
+  margin: 0;
+  z-index: 10;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.7;
+  text-shadow:
+    0 0 6px #7f00ff,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+.loading-word {
+  width: 60px;  
+  text-align: left;
+}
+
+.loading-dots {
+  width: 30px;
+  text-align: left;
+  min-width: 20px;
+}
+

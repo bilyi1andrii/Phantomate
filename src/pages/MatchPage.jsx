@@ -13,6 +13,8 @@ import ProfileImage from '../assets/phantom-profile.png';
 import ArrowLike from '../assets/matchlike.gif';
 import ArrowNope from '../assets/matchnope.gif';
 
+import LoadingPage from '../components/LoadingPage';
+
 
 
 export default function MatchPage() {
@@ -277,6 +279,10 @@ export default function MatchPage() {
             state: { openChat: true, chatId, chatWith: profile }
         });
     };
+
+    if (!me || !swipesLoaded || !matchesLoaded) {
+        return <LoadingPage />;
+    }
 
     return (
         <div className="match-page">
