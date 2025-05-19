@@ -6,6 +6,7 @@ import axios from 'axios';
 import '../styles/TestPage.css';
 import SideBar from '../components/SideBar.jsx';
 import BooImage from '../assets/boo.png';
+import ResultImage from '../assets/match1.gif';
 import LoadingPage from '../components/LoadingPage';
 
 export default function PersonalityTestPage() {
@@ -161,6 +162,7 @@ export default function PersonalityTestPage() {
                     <div className="result-section">
                         <h2>Your score:</h2>
                         <p>{score}</p>
+                        <img src={ResultImage} alt="celebration" className="result-gif" />
                     </div>
                 )}
             </main>
