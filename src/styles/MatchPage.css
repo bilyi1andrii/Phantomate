@@ -39,7 +39,7 @@
     border-radius: 20px;
     padding: 0px 60px;
     text-align: center;
-    height: 550px;
+    height: 600px;
     width: 90%;
     max-width: 1000px;
     position: relative;
@@ -327,7 +327,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 40px;
 }
 
 .no-profiles-message {
