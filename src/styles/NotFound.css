@@ -1,35 +1,35 @@
 .notFoundContainer {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-  box-sizing: border-box;
-  background-image: url('../assets/404.gif');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  color: #fff;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-  z-index: 0;
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-image: url('../assets/404.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    z-index: 0;
 }
 
 .notFoundContainer::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: -1;
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
 }
 
 .notFoundTitle {
-  font-size: 3rem;
-  margin-bottom: 20px;
+    font-size: 3rem;
+    margin-bottom: 20px;
 }
 
 .notFoundText {
-  font-size: 1.25rem;
+    font-size: 1.25rem;
 }

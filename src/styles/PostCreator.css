@@ -19,24 +19,24 @@
 }
 
 .post-description {
-  width: 90%;
-  background-color: #0C0918;
-  padding: 10px;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 12px;
-  resize: none;
-  height: 80px;
-  overflow-wrap: break-word;
-  white-space: normal;
-  margin: 20px auto 10px auto;
+    width: 90%;
+    background-color: #0C0918;
+    padding: 10px;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 12px;
+    resize: none;
+    height: 80px;
+    overflow-wrap: break-word;
+    white-space: normal;
+    margin: 20px auto 10px auto;
 }
 
 .post-description:focus {
-  outline: none;
-  box-shadow: none;
-  border: none;
+    outline: none;
+    box-shadow: none;
+    border: none;
 }
 
 

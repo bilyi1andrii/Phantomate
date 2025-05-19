@@ -25,8 +25,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 1150px) {
@@ -95,7 +102,7 @@
 .button_signin:hover {
     background: linear-gradient(90deg, #7B6BC1 0%, #6E5DAC 100%);
     transform: scale(1.05);
-    }
+}
 
 
 .input-container {
@@ -104,9 +111,9 @@
     width: 90%;
     margin-left: auto;
     margin-right: auto;
-  }
-  
-  
+}
+
+
 .input-field {
     height: 30px;
     width: 100%;
@@ -116,7 +123,8 @@
     border: 2px solid #ddd;
     border-radius: 15px;
     outline: none;
-    background-color: rgba(201, 193, 240, 0.5);;
+    background-color: rgba(201, 193, 240, 0.5);
+    ;
     transition: border-color 0.3s ease;
 }
 
@@ -159,36 +167,36 @@
 .footer_signin .social-media {
     display: flex;
     gap: 15px;
-    }
-    
-    .footer_signin .about-us {
+}
+
+.footer_signin .about-us {
     margin: 10px;
-    }
-    
-    .footer_signin .social-media a {
+}
+
+.footer_signin .social-media a {
     color: #aaa8cc;
     text-decoration: none;
     transition: color 0.3s ease;
     font-size: 10px;
-    }
-    
-    .footer_signin .social-media a:hover {
-    color: #ffffff;
-    }
-    
-    .footer_signin .social-media a:active {
-    color: #ffffff;
-    }
+}
 
-    .error-message {
-        color: #ff4da3;
-        border: 1px solid #ffa39e;
-        padding: 5px;
-        width: 60%;
-        border-radius: 8px;
-        margin-top: 15px;
-        font-size: 14px;
-        text-align: center;
-        margin: 15px auto 0 auto;
-        margin: 0 auto;
-    }
+.footer_signin .social-media a:hover {
+    color: #ffffff;
+}
+
+.footer_signin .social-media a:active {
+    color: #ffffff;
+}
+
+.error-message {
+    color: #ff4da3;
+    border: 1px solid #ffa39e;
+    padding: 5px;
+    width: 60%;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+    text-align: center;
+    margin: 15px auto 0 auto;
+    margin: 0 auto;
+}
