@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { auth, db } from '../config/firebase';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-import axios from 'axios';
 import '../styles/TestPage.css';
 import SideBar from '../components/SideBar.jsx';
 import BooImage from '../assets/boo.png';
@@ -63,15 +62,18 @@ export default function PersonalityTestPage() {
             setLoading(true);
             setError(null);
             try {
-                const res = await axios.get('https://quizapi.io/api/v1/questions', {
-                    params: {
-                        apiKey: API_KEY,
-                        limit: 5,
-                        category: 'React',
-                        difficulty: 'Easy'
-                    }
+                const params = new URLSearchParams({
+                    apiKey: API_KEY,
+                    limit: '5',
+                    category: 'React',
+                    difficulty: 'Easy'
                 });
-                setQuestions(res.data);
+                const response = await fetch(`https://quizapi.io/api/v1/questions?${params}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                setQuestions(data);
             } catch (err) {
                 console.error('QuizAPI error', err);
                 setError('Couldn’t load questions');
