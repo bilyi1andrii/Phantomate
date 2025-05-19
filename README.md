@@ -25,7 +25,7 @@ Phantomate/ <br>
 
 ## Setup & Instalation
 ### Prerequisites:
-Node.js
+Node.js <br>
 Firebase CLI
 
 ### Cloning the repository:
@@ -42,17 +42,27 @@ npm install framer-motion
 npm install react-router-dom
 ```
 
-### Issues
-You can experience troubles running this script on Windows. This could be due to system rules.
+### Run app:
+```
+npm run dev
+```
+
+## Known Issues
+Windows OS does not permit to run certain scripts necessary for execution of this code. We strongly recommend switching to other platforms for this project.
+However, if you would still like to rn it on windows, run:
+```
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+before everything else.
 
 ## Development Notes
-Built with React + Vite
+Built with React + Vite <br>
 Firebase SDK v9+ modular style
 
 
 ## Contributing
-Oksana Kotilarchuk - https://github.com/Ok-ss
+Oksana Kotilarchuk - https://github.com/Ok-ss <br>
 
-Bilyi Andrii - https://github.com/bilyi1andrii
+Bilyi Andrii - https://github.com/bilyi1andrii <br>
 
-Iryna Kyrylova - https://github.com/hhafiya
+Iryna Kyrylova - https://github.com/hhafiya <br>
